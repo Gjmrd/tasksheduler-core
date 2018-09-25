@@ -1,20 +1,26 @@
 package org.taskscheduler.domain.entities;
 
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "users")
 public class User implements Executor{
 
     private int id;
+    private Group group;
     private String email;
     private String passwordHash;
     private String lastName;
     private String firstName;
     private String nickname;
+    private Date createdAt;
+    private Date updatedAt;
 
     @Id
     @GeneratedValue(generator = "increment")
@@ -70,5 +76,37 @@ public class User implements Executor{
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "createdAt")
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updatedAt")
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "groupId", referencedColumnName = "id")
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

@@ -22,8 +22,8 @@ public class HomeController {
 
     @RequestMapping(value = "/qwe", produces = MediaType.APPLICATION_JSON_VALUE)
     public String index() throws Exception{
-        User user = asyncUserService.getUserById(1).get();
-        user.setNickname("Test");
+        User user = new User();
+        user.setNickname("rrrr");
         asyncUserService.save(user);
         throw new Exception("checking exceptions");
 

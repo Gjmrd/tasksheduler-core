@@ -55,7 +55,6 @@ class AsyncUserServiceImpl implements AsyncUserService {
     //todo models for registration
     //todo spring security
     //todo spring jwt
-    //todo task models
     //todo task repositories and services
 
     public boolean userExists(String nickname) {
