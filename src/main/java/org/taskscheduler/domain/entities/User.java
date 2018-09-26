@@ -2,11 +2,13 @@ package org.taskscheduler.domain.entities;
 
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.ManyToAny;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -19,6 +21,8 @@ public class User implements Executor{
     private String lastName;
     private String firstName;
     private String nickname;
+    private List<Task> tasks;
+    private List<Task> createdTasks;
     private Date createdAt;
     private Date updatedAt;
 
@@ -108,5 +112,24 @@ public class User implements Executor{
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+
+    @ManyToMany(mappedBy = "executors")
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    @OneToMany(mappedBy = "creator")
+    public List<Task> getCreatedTasks() {
+        return createdTasks;
+    }
+
+    public void setCreatedTasks(List<Task> createdTasks) {
+        this.createdTasks = createdTasks;
     }
 }

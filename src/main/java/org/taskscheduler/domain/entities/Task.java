@@ -73,7 +73,7 @@ public class Task {
         this.description = description;
     }
 
-    @OneToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "creatorId", referencedColumnName = "id")
     public User getCreator() {
         return creator;
@@ -83,7 +83,7 @@ public class Task {
         this.creator = creator;
     }
 
-    @OneToMany
+    @ManyToMany
     @JoinTable
     public List<User> getExecutors() {
         return executors;
