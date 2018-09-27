@@ -1,7 +1,9 @@
 package org.taskscheduler.domain.services;
 
 import org.taskscheduler.domain.entities.Task;
+import org.taskscheduler.domain.entities.User;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -10,4 +12,6 @@ public interface AsyncTaskService {
     CompletableFuture<List<Task>> getAll() throws Exception;
     CompletableFuture<Void> save(Task task);
     CompletableFuture<Void> delete(Task task);
+    CompletableFuture<List<Task>> getCreated(User user) throws Exception;
+    CompletableFuture<List<Task>> getCreatedBetween(Date startDate, Date endDate, User user) throws Exception;
 }

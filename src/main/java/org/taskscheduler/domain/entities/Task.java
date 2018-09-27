@@ -2,6 +2,8 @@ package org.taskscheduler.domain.entities;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.taskscheduler.domain.entities.enums.Priority;
+import org.taskscheduler.domain.entities.enums.Status;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
@@ -13,7 +15,7 @@ import java.util.List;
 public class Task {
 
     private int id;
-    private Type type;
+    private Status status;
     private Priority priority;
     private String caption;
     private String description;
@@ -21,7 +23,7 @@ public class Task {
     private List<User> executors;
     private Executor responsible;
     private Date deadlineAt;
-    private Date completedAt;
+    private Date closedAt;
     private Date createdAt;
     private Date updatedAt;
 
@@ -35,14 +37,14 @@ public class Task {
         this.id = id;
     }
 
-    @OneToOne(targetEntity = Type.class)
-    @JoinColumn( name = "typeId", referencedColumnName = "id")
-    public Type getType() {
-        return type;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    public Status getStatus() {
+        return status;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Enumerated(EnumType.STRING)
@@ -115,12 +117,12 @@ public class Task {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "completedAt")
-    public Date getCompletedAt() {
-        return completedAt;
+    public Date getClosedAt() {
+        return closedAt;
     }
 
-    public void setCompletedAt(Date completedAt) {
-        this.completedAt = completedAt;
+    public void setClosedAtAt(Date closedAt) {
+        this.closedAt = closedAt;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

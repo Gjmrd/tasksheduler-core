@@ -1,4 +1,4 @@
-package org.taskscheduler.domain.entities;
+package org.taskscheduler.domain.entities.enums;
 
 
 import java.util.EnumSet;
