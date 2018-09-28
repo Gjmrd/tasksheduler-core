@@ -2,7 +2,6 @@ package org.taskscheduler.domain.entities;
 
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.ManyToAny;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.taskscheduler.domain.interfaces.Executor;
 
@@ -14,22 +13,25 @@ import java.util.List;
 @Table(name = "users")
 public class User implements Executor{
 
-    private int id;
+    private long id;
     private Group group;
+    private String username;
     private String email;
-    private String passwordHash;
+    private String password;
     private String lastName;
     private String firstName;
-    private String nickname;
     private List<Task> tasks;
     private List<Task> createdTasks;
     private Date createdAt;
     private Date updatedAt;
+    private boolean enabled;
+    private Date lastPasswordResetDate;
+    private List<Authority> authorities;
 
     @Id
     @GeneratedValue(generator = "increment")
     @Column(name = "id", nullable = false)
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -47,12 +49,12 @@ public class User implements Executor{
     }
 
     @Column(name = "passwordHash")
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Column(name = "firstName")
@@ -71,15 +73,6 @@ public class User implements Executor{
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    @Column(name = "nickname", unique = true, nullable = false)
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     @CreationTimestamp
@@ -131,5 +124,44 @@ public class User implements Executor{
 
     public void setCreatedTasks(List<Task> createdTasks) {
         this.createdTasks = createdTasks;
+    }
+
+    @Column(name = "lastPasswordResetDate")
+    public Date getLastPasswordResetDate() {
+        return lastPasswordResetDate;
+    }
+
+    public void setLastPasswordResetDate(Date lastPasswordResetDate) {
+        this.lastPasswordResetDate = lastPasswordResetDate;
+    }
+    @Column(name = "enabled")
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "USER_AUTHORITY",
+            joinColumns = {@JoinColumn(name = "userId", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "authorityId", referencedColumnName = "id")})
+    public List<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(List<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
+    @Column(name = "username", unique = true)
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

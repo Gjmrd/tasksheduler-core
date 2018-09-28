@@ -57,9 +57,6 @@ class AsyncUserServiceImpl implements AsyncUserService {
     //todo spring jwt
     //todo task repositories and services
 
-    public boolean userExists(String nickname) {
-        return userRepository.findByNickname(nickname).size() > 0;
-    }
 
     public boolean userExists(int id) throws Exception{
         return this.getUserById(id).get() != null;

@@ -27,10 +27,12 @@ public class HomeController {
 
     @RequestMapping(value = "/qwe", produces = MediaType.APPLICATION_JSON_VALUE)
     public String index() throws Exception{
-        User user = asyncUserService.getUserById(1).get();
-        List<Task> tasks = asyncTaskService.getCreated(user).get();
-        asyncUserService.save(user);
+        Task task = new Task();
+        task.setCaption("waqdwqdqdwqd");
+        asyncTaskService.save(task);
         throw new Exception("checking exceptions");
+
+        //todo complete controllers
 
     }
 
@@ -38,7 +40,6 @@ public class HomeController {
     @RequestMapping(value = "/test", produces = MediaType.TEXT_PLAIN_VALUE)
     public String test() {
         User user = new User();
-        user.setNickname("gjmrd");
-        return "it works " + Integer.toString(user.getId());
+        return "it works " + Long.toString(user.getId());
     }
 }

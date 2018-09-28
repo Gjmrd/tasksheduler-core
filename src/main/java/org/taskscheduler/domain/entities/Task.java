@@ -1,7 +1,9 @@
 package org.taskscheduler.domain.entities;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.taskscheduler.domain.entities.enums.CloseReason;
 import org.taskscheduler.domain.entities.enums.Priority;
 import org.taskscheduler.domain.entities.enums.Status;
 import org.taskscheduler.domain.interfaces.Executor;
@@ -22,6 +24,7 @@ public class Task {
     private User creator;
     private List<User> executors;
     private Executor responsible;
+    private CloseReason closeReason = CloseReason.NONE;
     private Date deadlineAt;
     private Date closedAt;
     private Date createdAt;
@@ -116,12 +119,12 @@ public class Task {
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "completedAt")
+    @Column(name = "closedAt")
     public Date getClosedAt() {
         return closedAt;
     }
 
-    public void setClosedAtAt(Date closedAt) {
+    public void setClosedAt(Date closedAt) {
         this.closedAt = closedAt;
     }
 
@@ -148,5 +151,22 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "closeReason", nullable = false)
+    @ColumnDefault("none")
+    public CloseReason getCloseReason() {
+        return closeReason == null ? CloseReason.NONE : closeReason;
+    }
+
+    public void setCloseReason(CloseReason closeReason) {
+        this.closeReason = closeReason == null ? CloseReason.NONE : closeReason;
+    }
+
+
+    //cant create isClosed method
+    public boolean closed() {
+        return status == Status.CLOSED;
+    }
 
 }

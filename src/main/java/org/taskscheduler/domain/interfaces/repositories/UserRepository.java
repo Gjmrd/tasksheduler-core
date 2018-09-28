@@ -6,5 +6,5 @@ import org.taskscheduler.domain.entities.User;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    List<User> findByNickname(String nickname);
+    User findByUsername(String username);
 }

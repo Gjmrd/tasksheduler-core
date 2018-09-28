@@ -8,7 +8,8 @@ public enum Status {
 
     ONGOING("ongoing"),
     FREEZED("freezed"),
-    FINISHED("finished");
+    FINISHED("finished"),
+    CLOSED("closed");
 
     private String status;
 

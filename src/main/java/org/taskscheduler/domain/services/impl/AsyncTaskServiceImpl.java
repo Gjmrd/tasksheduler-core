@@ -5,6 +5,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
+import org.taskscheduler.domain.entities.enums.CloseReason;
+import org.taskscheduler.domain.entities.enums.Status;
 import org.taskscheduler.domain.interfaces.repositories.TaskRepository;
 import org.taskscheduler.domain.services.AsyncTaskService;
 
@@ -16,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class AsyncTaskServiceImpl implements AsyncTaskService{
 
     private TaskRepository taskRepository;
+
 
     @Autowired
     public AsyncTaskServiceImpl(TaskRepository _taskRepository) {
@@ -58,5 +61,16 @@ public class AsyncTaskServiceImpl implements AsyncTaskService{
     @Async
     public CompletableFuture<Void> delete(Task task) {
         return null;
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<Void> close(Task task, CloseReason reason) {
+        return CompletableFuture.runAsync(() -> {
+            task.setStatus(Status.CLOSED);
+            task.setCloseReason(reason);
+            task.setClosedAt(new Date());
+            taskRepository.save(task);
+        });
     }
 }
