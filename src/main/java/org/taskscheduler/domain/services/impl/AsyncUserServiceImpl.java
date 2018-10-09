@@ -102,8 +102,7 @@ class AsyncUserServiceImpl implements AsyncUserService {
         user.setEmail(email);
         user.setEnabled(true);
         Authority roleUser = authorityRepository.findByName(AuthorityName.ROLE_USER);
-        List<Authority> authorities = new ArrayList<>(Arrays.asList(roleUser));
-        user.setAuthorities(authorities);
+        user.setAuthorities(Arrays.asList(roleUser));
         return CompletableFuture.completedFuture(userRepository.save(user));
     }
 }
