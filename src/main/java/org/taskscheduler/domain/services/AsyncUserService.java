@@ -12,7 +12,8 @@ public interface AsyncUserService {
     CompletableFuture<List<User>> getAll() throws Exception;
     CompletableFuture<User> save(User user) throws Exception;
     CompletableFuture<Void> delete(User user);
-    CompletableFuture<Void> changePassword(String password);
+    CompletableFuture<Void> changePassword(User user, String password);
+    CompletableFuture<Boolean> passwordIsValid(User user, String password);
     CompletableFuture<Boolean> userExistsByUsername(String username) throws Exception;
     CompletableFuture<Boolean> userExistsByEmail(String email) throws Exception;
     CompletableFuture<User> createUser(String lastName,

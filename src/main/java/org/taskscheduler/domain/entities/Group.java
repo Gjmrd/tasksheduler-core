@@ -3,11 +3,12 @@ package org.taskscheduler.domain.entities;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "groups")
-public class Group implements Executor{
+public class Group implements Serializable{
 
     private int id;
     private List<User> members;

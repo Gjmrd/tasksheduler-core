@@ -64,15 +64,18 @@ class AsyncUserServiceImpl implements AsyncUserService {
 
     @Override
     @Async
-    public CompletableFuture<Void> changePassword(String password) {
-        return CompletableFuture.runAsync(() -> {});
+    public CompletableFuture<Void> changePassword(User user, String password) {
+        return CompletableFuture.runAsync(() -> {
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.save(user);
+        });
     }
 
-    //todo models for registration
-    //todo spring security
-    //todo spring jwt
-    //todo task repositories and services
-
+    @Override
+    @Async
+    public CompletableFuture<Boolean> passwordIsValid(User user, String password) {
+        return CompletableFuture.completedFuture(passwordEncoder.matches(password, user.getPassword()));
+    }
 
     @Override
     @Async
@@ -101,8 +104,7 @@ class AsyncUserServiceImpl implements AsyncUserService {
         user.setLastName(lastName);
         user.setEmail(email);
         user.setEnabled(true);
-        Authority roleUser = authorityRepository.findByName(AuthorityName.ROLE_USER);
-        user.setAuthorities(Arrays.asList(roleUser));
+        user.setAuthorities(Arrays.asList(authorityRepository.findByName(AuthorityName.ROLE_USER)));
         return CompletableFuture.completedFuture(userRepository.save(user));
     }
 }

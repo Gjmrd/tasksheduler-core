@@ -13,13 +13,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.exceptions.AuthenticationException;
 import org.taskscheduler.domain.exceptions.RegistrationException;
@@ -33,7 +32,7 @@ import org.taskscheduler.security.JwtUser;
 
 
 @RestController
-public class AuthenticationController {
+public class AccountController {
 
 
     private String tokenHeader;
@@ -43,11 +42,11 @@ public class AuthenticationController {
     private AsyncUserService asyncUserService;
 
     @Autowired
-    public AuthenticationController(@Value("${jwt.header}") String tokenHeader,
-                                    AuthenticationManager authenticationManager,
-                                    JwtTokenUtil jwtTokenUtil,
-                                    @Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService,
-                                    AsyncUserService asyncUserService) {
+    public AccountController(@Value("${jwt.header}") String tokenHeader,
+                             AuthenticationManager authenticationManager,
+                             JwtTokenUtil jwtTokenUtil,
+                             @Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService,
+                             AsyncUserService asyncUserService) {
         this.tokenHeader = tokenHeader;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
@@ -89,8 +88,20 @@ public class AuthenticationController {
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(new JwtSignUpResponse(token, userDetails));
-
     }
+
+    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    public String changePassword(@AuthenticationPrincipal User user,
+                                 @RequestParam("oldPassword") String oldPassword,
+                                 @RequestParam("newPassword") String newPassword) throws Exception{
+
+        if (asyncUserService.passwordIsValid(user, oldPassword).get()) {
+            asyncUserService.changePassword(user, newPassword);
+            return "ok";
+        } else
+            throw new AuthenticationException("Wrong password", new HTTPException(400));
+    }
+
 
     @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {

@@ -9,12 +9,13 @@ import org.taskscheduler.domain.entities.enums.Status;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table( name = "tasks")
-public class Task {
+public class Task implements Serializable{
 
     private int id;
     private Status status;
@@ -23,7 +24,7 @@ public class Task {
     private String description;
     private User creator;
     private List<User> executors;
-    private Executor responsible;
+    private User responsible;
     private CloseReason closeReason = CloseReason.NONE;
     private Date deadlineAt;
     private Date closedAt;
@@ -100,11 +101,11 @@ public class Task {
 
     @OneToOne( targetEntity = User.class)
     @JoinColumn( name = "responsibleId" ,referencedColumnName = "id")
-    public Executor getResponsible() {
+    public User getResponsible() {
         return responsible;
     }
 
-    public void setResponsible(Executor responsible) {
+    public void setResponsible(User responsible) {
         this.responsible = responsible;
     }
 

@@ -7,12 +7,13 @@ import org.taskscheduler.domain.entities.enums.AuthorityName;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User implements Executor{
+public class User implements Serializable{
 
     private long id;
     private Group group;
