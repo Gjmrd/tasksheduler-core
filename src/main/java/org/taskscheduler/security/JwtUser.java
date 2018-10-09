@@ -8,14 +8,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-/**
- * Created by stephan on 20.03.16.
- */
+
+
+
 public class JwtUser implements UserDetails {
 
     private final Long id;
     private final String username;
     private final String password;
+    private final String lastName;
+    private final String firstName;
     private final String email;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean enabled;
@@ -24,14 +26,19 @@ public class JwtUser implements UserDetails {
     public JwtUser(
             Long id,
             String username,
+            String password,
+            String lastName,
+            String firstName,
             String email,
-            String password, Collection<? extends GrantedAuthority> authorities,
+            Collection<? extends GrantedAuthority> authorities,
             boolean enabled,
             Date lastPasswordResetDate
     ) {
         this.id = id;
         this.username = username;
         this.email = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
         this.password = password;
         this.authorities = authorities;
         this.enabled = enabled;
@@ -89,5 +96,13 @@ public class JwtUser implements UserDetails {
     @JsonIgnore
     public Date getLastPasswordResetDate() {
         return lastPasswordResetDate;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
     }
 }

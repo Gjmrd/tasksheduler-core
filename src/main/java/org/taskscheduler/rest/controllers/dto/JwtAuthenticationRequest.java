@@ -1,10 +1,8 @@
-package org.taskscheduler.security;
+package org.taskscheduler.rest.controllers.dto;
 
 import java.io.Serializable;
 
 public class JwtAuthenticationRequest implements Serializable {
-
-    private static final long serialVersionUID = -8445943548965154778L;
 
     private String username;
     private String password;

@@ -1,4 +1,4 @@
-package org.taskscheduler.domain.services;
+package org.taskscheduler.rest.controllers.dto;
 
 import java.io.Serializable;
 

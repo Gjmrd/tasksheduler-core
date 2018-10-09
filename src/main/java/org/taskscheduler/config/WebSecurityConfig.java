@@ -93,7 +93,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         HttpMethod.POST,
                         authenticationPath
                 )
-
                 // allow anonymous resource requests
                 .and()
                 .ignoring()

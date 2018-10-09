@@ -2,11 +2,20 @@ package org.taskscheduler.domain.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.taskscheduler.domain.entities.Authority;
 import org.taskscheduler.domain.entities.User;
+import org.taskscheduler.domain.entities.enums.AuthorityName;
+import org.taskscheduler.domain.interfaces.repositories.AuthorityRepository;
 import org.taskscheduler.domain.interfaces.repositories.UserRepository;
 import org.taskscheduler.domain.services.AsyncUserService;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,11 +25,16 @@ class AsyncUserServiceImpl implements AsyncUserService {
 
 
     private UserRepository userRepository;
-
+    private PasswordEncoder passwordEncoder;
+    private AuthorityRepository authorityRepository;
 
     @Autowired
-    public AsyncUserServiceImpl(UserRepository _userRepository) {
-        userRepository = _userRepository;
+    public AsyncUserServiceImpl(UserRepository userRepository,
+                                PasswordEncoder passwordEncoder,
+                                AuthorityRepository authorityRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authorityRepository = authorityRepository;
     }
 
     @Override
@@ -41,6 +55,7 @@ class AsyncUserServiceImpl implements AsyncUserService {
     }
 
     @Override
+    @Async
     public CompletableFuture<Void> delete(User user) {
         return  CompletableFuture.runAsync(() -> {
             userRepository.delete(user);
@@ -48,6 +63,7 @@ class AsyncUserServiceImpl implements AsyncUserService {
     }
 
     @Override
+    @Async
     public CompletableFuture<Void> changePassword(String password) {
         return CompletableFuture.runAsync(() -> {});
     }
@@ -58,7 +74,36 @@ class AsyncUserServiceImpl implements AsyncUserService {
     //todo task repositories and services
 
 
-    public boolean userExists(int id) throws Exception{
-        return this.getUserById(id).get() != null;
+    @Override
+    @Async
+    public CompletableFuture<Boolean> userExistsByUsername(String username) {
+        return CompletableFuture.completedFuture(userRepository.findByUsername(username) != null);
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<Boolean> userExistsByEmail(String email) {
+        return CompletableFuture.completedFuture(userRepository.findByEmail(email) != null);
+    }
+
+    @Override
+    @Async
+    public CompletableFuture<User> createUser(String username,
+                                              String password,
+                                              String lastName,
+                                              String firstName,
+                                              String email) {
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setEnabled(true);
+        Authority roleUser = authorityRepository.findByName(AuthorityName.ROLE_USER);
+        List<Authority> authorities = new ArrayList<>(Arrays.asList(roleUser));
+        user.setAuthorities(authorities);
+        return CompletableFuture.completedFuture(userRepository.save(user));
     }
 }

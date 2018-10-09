@@ -61,7 +61,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             logger.warn("couldn't find bearer string, will ignore the header");
         }
 
-        logger.debug("checking authentication for user '{}'", username);
+        logger.warn("checking authentication for user '{}'", username);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             logger.debug("security context was null, so authorizating user");
 

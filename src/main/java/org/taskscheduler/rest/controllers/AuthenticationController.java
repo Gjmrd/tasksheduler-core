@@ -2,6 +2,7 @@ package org.taskscheduler.rest.controllers;
 
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.http.HTTPException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,9 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.exceptions.AuthenticationException;
-import org.taskscheduler.domain.services.JwtAuthenticationResponse;
-import org.taskscheduler.security.JwtAuthenticationRequest;
+import org.taskscheduler.domain.exceptions.RegistrationException;
+import org.taskscheduler.domain.services.AsyncUserService;
+import org.taskscheduler.rest.controllers.dto.JwtAuthenticationResponse;
+import org.taskscheduler.rest.controllers.dto.JwtAuthenticationRequest;
+import org.taskscheduler.rest.controllers.dto.JwtSignUpResponse;
+import org.taskscheduler.rest.controllers.dto.JwtSignupRequest;
 import org.taskscheduler.security.JwtTokenUtil;
 import org.taskscheduler.security.JwtUser;
 
@@ -29,18 +35,25 @@ import org.taskscheduler.security.JwtUser;
 @RestController
 public class AuthenticationController {
 
-    @Value("${jwt.header}")
+
     private String tokenHeader;
-
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    private UserDetailsService userDetailsService;
+    private AsyncUserService asyncUserService;
 
     @Autowired
-    @Qualifier("jwtUserDetailsService")
-    private UserDetailsService userDetailsService;
+    public AuthenticationController(@Value("${jwt.header}") String tokenHeader,
+                                    AuthenticationManager authenticationManager,
+                                    JwtTokenUtil jwtTokenUtil,
+                                    @Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService,
+                                    AsyncUserService asyncUserService) {
+        this.tokenHeader = tokenHeader;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.asyncUserService = asyncUserService;
+    }
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
@@ -53,6 +66,30 @@ public class AuthenticationController {
 
         // Return the token
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+    }
+
+    @RequestMapping(value = "/auth/signup", method = RequestMethod.POST)
+    public ResponseEntity<?> signup(@RequestBody JwtSignupRequest request) throws Exception{
+        // checking if username is already in use
+        if (asyncUserService.userExistsByUsername(request.getUsername()).get()) {
+            throw new RegistrationException("User with this nickname already exists", new HTTPException(400));
+        }
+        if (asyncUserService.userExistsByEmail(request.getEmail()).get()) {
+            throw new RegistrationException("This email is already in user", new HTTPException(400));
+        }
+        User user = asyncUserService.createUser(request.getUsername(),
+                                                request.getPassword(),
+                                                request.getLastName(),
+                                                request.getFirstName(),
+                                                request.getEmail()).get();
+
+        authenticate(request.getUsername(), request.getPassword());
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        final String token = jwtTokenUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(new JwtSignUpResponse(token, userDetails));
+
     }
 
     @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)

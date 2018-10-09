@@ -3,6 +3,7 @@ package org.taskscheduler.domain.entities;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.taskscheduler.domain.entities.enums.AuthorityName;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
@@ -35,7 +36,7 @@ public class User implements Executor{
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -163,5 +164,9 @@ public class User implements Executor{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean hasRole(AuthorityName role) {
+        return this.authorities.contains(role);
     }
 }
