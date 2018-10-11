@@ -1,9 +1,11 @@
 package org.taskscheduler.rest.controllers;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.http.HTTPException;
 
+import com.sun.deploy.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +20,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.User;
+import org.taskscheduler.domain.entities.VerificationToken;
 import org.taskscheduler.domain.exceptions.AuthenticationException;
+import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
 import org.taskscheduler.domain.exceptions.RegistrationException;
 import org.taskscheduler.domain.services.UserService;
 import org.taskscheduler.rest.controllers.dto.JwtAuthenticationResponse;
@@ -89,15 +93,37 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
-    public String changePassword(@AuthenticationPrincipal User user,
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal User user,
                                  @RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword) throws Exception{
 
         if (userService.passwordIsValid(user, oldPassword)) {
             userService.changePassword(user, newPassword);
-            return "ok";
+            return ResponseEntity.ok("ok");
         } else
             throw new AuthenticationException("Wrong password", new HTTPException(400));
+    }
+
+    @RequestMapping(value = "/password/reset", method = RequestMethod.POST)
+    public ResponseEntity<?> resetPassword(@RequestParam("email") String email) {
+        User user = userService.getByEmail(email);
+        if (user == null)
+            throw new RuntimeException(String.format("user with email %s not found", email),new HTTPException(404));
+        VerificationToken verificationToken = userService.createVerificationToken(user);
+        userService.sendVerificationToken(verificationToken);
+        return ResponseEntity.ok("check your email");
+    }
+
+    @RequestMapping(value = "/password/reset", method = RequestMethod.GET)
+    public ResponseEntity<?> confirmPasswordReset(@RequestParam("token") String token,
+                                                  @RequestParam("newPassword") String newPassword) {
+        try {
+            userService.confirmPasswordReset(token, newPassword);
+        }
+        catch (InvalidVerificationTokenException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok("ok");
     }
 
 
