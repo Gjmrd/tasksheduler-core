@@ -1,5 +1,6 @@
 package org.taskscheduler.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -91,6 +92,7 @@ public class Task implements Serializable{
 
     @ManyToMany
     @JoinTable
+    @JsonIgnore
     public List<User> getExecutors() {
         return executors;
     }

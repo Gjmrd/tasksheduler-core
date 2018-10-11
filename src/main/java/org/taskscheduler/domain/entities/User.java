@@ -1,6 +1,7 @@
 package org.taskscheduler.domain.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.taskscheduler.domain.entities.enums.AuthorityName;
@@ -51,6 +52,7 @@ public class User implements Serializable{
     }
 
     @Column(name = "passwordHash")
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -80,6 +82,7 @@ public class User implements Serializable{
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createdAt")
+    @JsonIgnore
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -91,6 +94,7 @@ public class User implements Serializable{
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updatedAt")
+    @JsonIgnore
     public Date getUpdatedAt() {
         return updatedAt;
     }
@@ -111,6 +115,7 @@ public class User implements Serializable{
 
 
     @ManyToMany(mappedBy = "executors")
+    @JsonIgnore
     public List<Task> getTasks() {
         return tasks;
     }
@@ -120,6 +125,7 @@ public class User implements Serializable{
     }
 
     @OneToMany(mappedBy = "creator")
+    @JsonIgnore
     public List<Task> getCreatedTasks() {
         return createdTasks;
     }
@@ -129,6 +135,7 @@ public class User implements Serializable{
     }
 
     @Column(name = "lastPasswordResetDate")
+    @JsonIgnore
     public Date getLastPasswordResetDate() {
         return lastPasswordResetDate;
     }
@@ -137,6 +144,7 @@ public class User implements Serializable{
         this.lastPasswordResetDate = lastPasswordResetDate;
     }
     @Column(name = "enabled")
+    @JsonIgnore
     public boolean isEnabled() {
         return enabled;
     }
@@ -146,6 +154,7 @@ public class User implements Serializable{
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinTable(
             name = "USER_AUTHORITY",
             joinColumns = {@JoinColumn(name = "userId", referencedColumnName = "id")},

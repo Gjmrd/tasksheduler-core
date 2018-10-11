@@ -1,5 +1,5 @@
 package org.taskscheduler.domain.services;
 
-public interface AsyncGroupService {
+public interface GroupService {
 
 }

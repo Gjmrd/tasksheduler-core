@@ -6,30 +6,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
-import org.taskscheduler.domain.services.AsyncTaskService;
-import org.taskscheduler.domain.services.AsyncUserService;
-
-import java.util.List;
+import org.taskscheduler.domain.services.TaskService;
+import org.taskscheduler.domain.services.UserService;
 
 
 @RestController
 public class HomeController {
 
-    private AsyncUserService asyncUserService;
-    private AsyncTaskService asyncTaskService;
+    private UserService userService;
+    private TaskService taskService;
 
     @Autowired
-    public HomeController(AsyncUserService _Async_userService,
-                          AsyncTaskService _asyncTaskService) {
-        asyncUserService = _Async_userService;
-        asyncTaskService = _asyncTaskService;
+    public HomeController(UserService userService,
+                          TaskService taskService) {
+        this.userService = userService;
+        this.taskService = taskService;
     }
 
     @RequestMapping(value = "/qwe", produces = MediaType.APPLICATION_JSON_VALUE)
     public String index() throws Exception{
         Task task = new Task();
         task.setCaption("waqdwqdqdwqd");
-        asyncTaskService.save(task);
+        taskService.save(task);
         throw new Exception("checking exceptions");
 
         //todo complete controllers

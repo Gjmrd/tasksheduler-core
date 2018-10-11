@@ -13,16 +13,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.exceptions.AuthenticationException;
 import org.taskscheduler.domain.exceptions.RegistrationException;
-import org.taskscheduler.domain.services.AsyncUserService;
+import org.taskscheduler.domain.services.UserService;
 import org.taskscheduler.rest.controllers.dto.JwtAuthenticationResponse;
 import org.taskscheduler.rest.controllers.dto.JwtAuthenticationRequest;
 import org.taskscheduler.rest.controllers.dto.JwtSignUpResponse;
@@ -39,19 +37,19 @@ public class AccountController {
     private AuthenticationManager authenticationManager;
     private JwtTokenUtil jwtTokenUtil;
     private UserDetailsService userDetailsService;
-    private AsyncUserService asyncUserService;
+    private UserService userService;
 
     @Autowired
     public AccountController(@Value("${jwt.header}") String tokenHeader,
                              AuthenticationManager authenticationManager,
                              JwtTokenUtil jwtTokenUtil,
                              @Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService,
-                             AsyncUserService asyncUserService) {
+                             UserService userService) {
         this.tokenHeader = tokenHeader;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userDetailsService = userDetailsService;
-        this.asyncUserService = asyncUserService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
@@ -70,17 +68,17 @@ public class AccountController {
     @RequestMapping(value = "/auth/signup", method = RequestMethod.POST)
     public ResponseEntity<?> signup(@RequestBody JwtSignupRequest request) throws Exception{
         // checking if username is already in use
-        if (asyncUserService.userExistsByUsername(request.getUsername()).get()) {
+        if (userService.userExistsByUsername(request.getUsername())) {
             throw new RegistrationException("User with this nickname already exists", new HTTPException(400));
         }
-        if (asyncUserService.userExistsByEmail(request.getEmail()).get()) {
+        if (userService.userExistsByEmail(request.getEmail())) {
             throw new RegistrationException("This email is already in user", new HTTPException(400));
         }
-        User user = asyncUserService.createUser(request.getUsername(),
+        User user = userService.createUser(request.getUsername(),
                                                 request.getPassword(),
                                                 request.getLastName(),
                                                 request.getFirstName(),
-                                                request.getEmail()).get();
+                                                request.getEmail());
 
         authenticate(request.getUsername(), request.getPassword());
 
@@ -95,8 +93,8 @@ public class AccountController {
                                  @RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword) throws Exception{
 
-        if (asyncUserService.passwordIsValid(user, oldPassword).get()) {
-            asyncUserService.changePassword(user, newPassword);
+        if (userService.passwordIsValid(user, oldPassword)) {
+            userService.changePassword(user, newPassword);
             return "ok";
         } else
             throw new AuthenticationException("Wrong password", new HTTPException(400));

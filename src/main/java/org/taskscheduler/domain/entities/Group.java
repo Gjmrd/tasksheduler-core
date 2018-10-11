@@ -1,5 +1,7 @@
 package org.taskscheduler.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
@@ -26,6 +28,7 @@ public class Group implements Serializable{
     }
 
     @OneToMany(mappedBy = "group")
+    @JsonIgnore
     public List<User> getMembers() {
         return members;
     }
