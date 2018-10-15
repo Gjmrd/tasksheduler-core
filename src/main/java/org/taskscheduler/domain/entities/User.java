@@ -17,7 +17,7 @@ import java.util.List;
 public class User implements Serializable{
 
     private long id;
-    private Group group;
+    private List<Group> groups;
     private String username;
     private String email;
     private String password;
@@ -103,14 +103,14 @@ public class User implements Serializable{
         this.updatedAt = updatedAt;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "groupId", referencedColumnName = "id")
-    public Group getGroup() {
-        return group;
+    @ManyToMany
+    @JsonIgnore
+    public List<Group> getGroups() {
+        return this.groups;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
     }
 
 
@@ -174,9 +174,5 @@ public class User implements Serializable{
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public boolean hasRole(AuthorityName role) {
-        return this.authorities.contains(role);
     }
 }

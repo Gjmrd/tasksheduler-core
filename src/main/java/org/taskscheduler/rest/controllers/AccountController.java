@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.VerificationToken;
+import org.taskscheduler.domain.entities.enums.AuthorityName;
 import org.taskscheduler.domain.exceptions.AuthenticationException;
 import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
 import org.taskscheduler.domain.exceptions.RegistrationException;
@@ -78,12 +79,7 @@ public class AccountController {
         if (userService.userExistsByEmail(request.getEmail())) {
             throw new RegistrationException("This email is already in user", new HTTPException(400));
         }
-        User user = userService.createUser(request.getUsername(),
-                                                request.getPassword(),
-                                                request.getLastName(),
-                                                request.getFirstName(),
-                                                request.getEmail());
-
+        User user = userService.createUser(request);
         authenticate(request.getUsername(), request.getPassword());
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
@@ -93,10 +89,11 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
-    public ResponseEntity<?> changePassword(@AuthenticationPrincipal User user,
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserDetails userDetails,
                                  @RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword) throws Exception{
 
+        User user = userService.getByUsername(userDetails.getUsername());
         if (userService.passwordIsValid(user, oldPassword)) {
             userService.changePassword(user, newPassword);
             return ResponseEntity.ok("ok");

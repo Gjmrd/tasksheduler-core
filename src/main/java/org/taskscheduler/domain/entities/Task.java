@@ -18,7 +18,7 @@ import java.util.List;
 @Table( name = "tasks")
 public class Task implements Serializable{
 
-    private int id;
+    private long id;
     private Status status;
     private Priority priority;
     private String caption;
@@ -34,11 +34,11 @@ public class Task implements Serializable{
 
     @Id
     @GeneratedValue(generator = "increment")
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -92,7 +92,6 @@ public class Task implements Serializable{
 
     @ManyToMany
     @JoinTable
-    @JsonIgnore
     public List<User> getExecutors() {
         return executors;
     }

@@ -27,7 +27,7 @@ public class Group implements Serializable{
         this.id = id;
     }
 
-    @OneToMany(mappedBy = "group")
+    @ManyToMany
     @JsonIgnore
     public List<User> getMembers() {
         return members;

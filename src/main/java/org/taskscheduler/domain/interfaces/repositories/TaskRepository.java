@@ -9,7 +9,7 @@ import org.taskscheduler.domain.entities.User;
 import java.util.Date;
 import java.util.List;
 
-public interface TaskRepository extends JpaRepository<Task, Integer>{
+public interface TaskRepository extends JpaRepository<Task, Long>{
     @Query(value = "select t from Task t where t.creator = :user and t.createdAt between :startDate and :endDate")
     List<Task> findCreatedBetween(@Param("startDate") Date startDate,
                                   @Param("endDate") Date endDate,

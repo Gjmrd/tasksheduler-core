@@ -14,6 +14,7 @@ import org.taskscheduler.domain.interfaces.repositories.AuthorityRepository;
 import org.taskscheduler.domain.interfaces.repositories.UserRepository;
 import org.taskscheduler.domain.interfaces.repositories.VerificationTokenRepository;
 import org.taskscheduler.domain.services.UserService;
+import org.taskscheduler.rest.controllers.dto.JwtSignupRequest;
 
 import java.util.*;
 
@@ -59,6 +60,11 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
     @Async
     public User save(User user) {
         return userRepository.saveAndFlush(user);
@@ -93,18 +99,14 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(String username,
-                                              String password,
-                                              String lastName,
-                                              String firstName,
-                                              String email) {
+    public User createUser(JwtSignupRequest request) {
 
         User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
         user.setEnabled(true);
         user.setAuthorities(Arrays.asList(authorityRepository.findByName(AuthorityName.ROLE_USER)));
         return userRepository.save(user);

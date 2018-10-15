@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -104,5 +105,9 @@ public class JwtUser implements UserDetails {
 
     public String getFirstName() {
         return firstName;
+    }
+
+    public boolean hasRole(String authority) {
+        return this.authorities.contains(new SimpleGrantedAuthority(authority));
     }
 }
