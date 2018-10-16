@@ -65,7 +65,7 @@ public class TaskController {
 
         taskService.close(task, CloseReason.COMPLETED);
         //todo send notifications
-        //todo: should i check if task is null?
+        //todo: should I check if task is null?
         return ResponseEntity.ok("ok");
     }
 
