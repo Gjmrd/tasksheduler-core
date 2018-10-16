@@ -1,10 +1,12 @@
 package org.taskscheduler.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.taskscheduler.domain.services.impl.JwtUserDetailsService;
 import org.taskscheduler.security.JwtAuthenticationEntryPoint;
@@ -34,6 +37,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // Custom JWT based security filter
     @Autowired
     JwtAuthorizationTokenFilter authenticationTokenFilter;
+
+    @Autowired
+    @Qualifier("customPermissionEvaluator")
+    PermissionEvaluator customPermissionEvaluator;
 
     @Value("${jwt.header}")
     private String tokenHeader;
@@ -110,5 +117,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .ignoring()
                 .antMatchers("/h2-console/**/**");
+
     }
 }

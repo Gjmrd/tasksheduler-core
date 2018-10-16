@@ -18,6 +18,7 @@ public interface TaskService {
     void save(Task task);
     void delete(Task task);
     void close(Task task, CloseReason reason);
+    void freeze(Task task);
     List<Task> getCreated(User user) throws Exception;
     List<Task> getCreatedBetween(Date startDate, Date endDate, User user) throws Exception;
 

@@ -53,6 +53,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public void freeze(Task task) {
+        task.setStatus(Status.FREEZED);
+        taskRepository.save(task);
+    }
+
+    @Override
     public List<Task> getCreated(User user) throws Exception {
         return taskRepository.findCreated(user);
     }
