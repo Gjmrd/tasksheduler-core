@@ -1,6 +1,9 @@
 package org.taskscheduler.domain.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
@@ -38,6 +41,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Page<Task> getUsersTasks(User user, Pageable pageable) {
+        return taskRepository.findUsersTasks(user, pageable);
+    }
+
+    @Override
     public Task createNew(User user, TaskDto taskDto) throws ExecutionException, InterruptedException {
         Task task = new Task();
         CompletableFuture future = CompletableFuture
@@ -59,18 +67,18 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getCreated(User user) throws Exception {
-        return taskRepository.findCreated(user);
+    public Page<Task> getCreated(User user, Pageable pageable) {
+        return taskRepository.findCreated(user, pageable);
     }
 
     @Override
-    public List<Task> getCreatedBetween(Date startDate, Date endDate, User user) {
-        return taskRepository.findCreatedBetween(startDate, endDate, user);
+    public Page<Task> getCreatedBetween(Date startDate, Date endDate, User user, Pageable pageable) {
+        return taskRepository.findCreatedBetween(startDate, endDate, user, pageable);
     }
 
     @Override
-    public List<Task> getAll() throws Exception {
-        return taskRepository.findAll();
+    public Page<Task> getAll(Pageable pageable)  {
+        return taskRepository.findAll(pageable);
     }
 
     @Override

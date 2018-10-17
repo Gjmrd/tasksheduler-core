@@ -1,5 +1,7 @@
 package org.taskscheduler.domain.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.VerificationToken;
@@ -13,13 +15,14 @@ import java.util.concurrent.CompletableFuture;
 
 public interface TaskService {
     Task getById(long id) ;
-    List<Task> getAll() throws Exception;
+    Page<Task> getAll(Pageable pageable);
+    Page<Task> getUsersTasks(User user, Pageable pageable);
     Task createNew(User user, TaskDto taskDto) throws Exception;
     void save(Task task);
     void delete(Task task);
     void close(Task task, CloseReason reason);
     void freeze(Task task);
-    List<Task> getCreated(User user) throws Exception;
-    List<Task> getCreatedBetween(Date startDate, Date endDate, User user) throws Exception;
+    Page<Task> getCreated(User user, Pageable pageable);
+    Page<Task> getCreatedBetween(Date startDate, Date endDate, User user, Pageable pageable) ;
 
 }

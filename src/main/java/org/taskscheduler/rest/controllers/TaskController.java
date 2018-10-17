@@ -1,6 +1,9 @@
 package org.taskscheduler.rest.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,23 +43,35 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
-    @PreAuthorize("hasPermission(#taskId, 'FREEZE_TASK')")
+    @PreAuthorize("hasPermission(#taskId, 'TASK_CREATOR')")
     @RequestMapping(value = "/task/freeze", method = RequestMethod.POST)
     public ResponseEntity<?> freeze(@AuthenticationPrincipal UserDetails userDetails, @RequestParam long taskId) {
         Task task = taskService.getById(taskId);
         if (task == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid task ID");
         taskService.freeze(task);
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok("ok");
     }
 
+    @PreAuthorize("hasPermission(#id, 'TASK_OWNER')")
     @RequestMapping(value = "/task", method = RequestMethod.GET)
     public ResponseEntity<?> getTask(@RequestParam("id") int id) {
         return ResponseEntity.ok(taskService.getById(id));
     }
 
+    @RequestMapping(value = "/task/all", method = RequestMethod.GET)
+    public ResponseEntity<?> getMyTasks(@AuthenticationPrincipal  UserDetails userDetails, Pageable pageable) {
+        User user = userService.getByUsername(userDetails.getUsername());
+        return ResponseEntity.ok(taskService.getUsersTasks(user, pageable));
+    }
 
-    @PreAuthorize("hasPermission(#taskId, 'CLOSE_TASK')")
+    @RequestMapping(value = "task/created", method = RequestMethod.GET)
+    public ResponseEntity<?> getCreatedTasks(@AuthenticationPrincipal UserDetails userDetails, Pageable pageable) {
+        User user = userService.getByUsername(userDetails.getUsername());
+        return ResponseEntity.ok(taskService.getCreated(user, pageable));
+    }
+
+    @PreAuthorize("hasPermission(#taskId, 'TASK_OWNER')")
     @RequestMapping(value = "/task/complete", method = RequestMethod.POST)
     public ResponseEntity<?> completeTask(@RequestParam("id") long taskId) {
         Task task = taskService.getById(taskId);
@@ -65,7 +80,7 @@ public class TaskController {
 
         taskService.close(task, CloseReason.COMPLETED);
         //todo send notifications
-        //todo: should I check if task is null?
+        //todo: paginate results
         return ResponseEntity.ok("ok");
     }
 

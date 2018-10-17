@@ -49,12 +49,12 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.toString())))
             return true;
         switch (permission) {
-            case "CLOSE_TASK" :
+            case "TASK_OWNER" :
                 if ((task.getCreator() != user) && (!task.getExecutors().contains(user)))
                     return false;
                 break;
 
-            case "FREEZE_TASK" :
+            case "TASK_CREATOR" :
                 if (task.getCreator() != user)
                     return false;
                 break;
