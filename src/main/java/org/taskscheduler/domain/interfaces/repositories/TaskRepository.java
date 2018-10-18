@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
+import org.taskscheduler.domain.entities.PageInfo;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
 

@@ -4,8 +4,6 @@ package org.taskscheduler.domain.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.taskscheduler.domain.entities.enums.AuthorityName;
-import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
 import java.io.Serializable;

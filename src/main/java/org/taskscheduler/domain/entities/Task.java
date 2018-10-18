@@ -1,13 +1,11 @@
 package org.taskscheduler.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.taskscheduler.domain.entities.enums.CloseReason;
 import org.taskscheduler.domain.entities.enums.Priority;
 import org.taskscheduler.domain.entities.enums.Status;
-import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
 import java.io.Serializable;

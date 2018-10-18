@@ -1,10 +1,9 @@
 package org.taskscheduler.domain.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.taskscheduler.domain.entities.PageInfo;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.enums.CloseReason;
@@ -17,7 +16,6 @@ import org.taskscheduler.rest.controllers.dto.TaskDto;
 
 
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -41,8 +39,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<Task> getUsersTasks(User user, Pageable pageable) {
-        return taskRepository.findUsersTasks(user, pageable);
+    public PageInfo<Task> getUsersTasks(User user, Pageable pageable) {
+        return new PageInfo<>(taskRepository.findUsersTasks(user, pageable));
     }
 
     @Override
@@ -67,18 +65,19 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<Task> getCreated(User user, Pageable pageable) {
-        return taskRepository.findCreated(user, pageable);
+    public PageInfo<Task> getCreated(User user, Pageable pageable) {
+        return new PageInfo<>(taskRepository.findCreated(user, pageable));
     }
 
     @Override
-    public Page<Task> getCreatedBetween(Date startDate, Date endDate, User user, Pageable pageable) {
-        return taskRepository.findCreatedBetween(startDate, endDate, user, pageable);
+    public PageInfo<Task> getCreatedBetween(Date startDate, Date endDate, User user, Pageable pageable) {
+        return new PageInfo<>(taskRepository.findCreatedBetween(startDate, endDate, user, pageable));
     }
 
     @Override
-    public Page<Task> getAll(Pageable pageable)  {
-        return taskRepository.findAll(pageable);
+    public PageInfo<Task> getAll(Pageable pageable)  {
+
+        return new PageInfo<>(taskRepository.findAll(pageable));
     }
 
     @Override

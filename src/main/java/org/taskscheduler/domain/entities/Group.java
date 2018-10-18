@@ -1,8 +1,6 @@
 package org.taskscheduler.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import org.taskscheduler.domain.interfaces.Executor;
 
 import javax.persistence.*;
 import java.io.Serializable;
