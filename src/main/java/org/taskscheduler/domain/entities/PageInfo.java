@@ -10,7 +10,7 @@ import java.util.List;
 
 
 //wrapper for Page<T>
-@JsonPropertyOrder({"total", "size", "pageCount", "elements"})
+@JsonPropertyOrder({"total", "size", "number","pageCount", "elements"})
 public class PageInfo<T>  {
 
     private Page<T> page;
@@ -18,6 +18,10 @@ public class PageInfo<T>  {
     public PageInfo (Page<T> page) {
         this.page = page;
 
+    }
+
+    public int getNumber() {
+        return this.page.getNumber();
     }
 
     @JsonIgnore
