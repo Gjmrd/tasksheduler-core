@@ -1,4 +1,4 @@
-package org.taskscheduler.domain.services.impl;
+package org.taskscheduler.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,11 +10,11 @@ import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.VerificationToken;
 import org.taskscheduler.domain.entities.enums.AuthorityName;
 import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
-import org.taskscheduler.domain.interfaces.repositories.AuthorityRepository;
-import org.taskscheduler.domain.interfaces.repositories.UserRepository;
-import org.taskscheduler.domain.interfaces.repositories.VerificationTokenRepository;
-import org.taskscheduler.domain.services.UserService;
-import org.taskscheduler.rest.controllers.dto.JwtSignupRequest;
+import org.taskscheduler.domain.repositories.AuthorityRepository;
+import org.taskscheduler.domain.repositories.UserRepository;
+import org.taskscheduler.domain.repositories.VerificationTokenRepository;
+import org.taskscheduler.services.UserService;
+import org.taskscheduler.rest.dto.JwtSignupRequest;
 
 import java.util.*;
 

@@ -2,7 +2,7 @@ package org.taskscheduler.rest.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import org.taskscheduler.domain.services.GroupService;
+import org.taskscheduler.services.GroupService;
 
 
 @RestController

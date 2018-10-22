@@ -1,13 +1,11 @@
-package org.taskscheduler.domain.services;
+package org.taskscheduler.services;
 
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.VerificationToken;
 import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
-import org.taskscheduler.rest.controllers.dto.JwtSignupRequest;
+import org.taskscheduler.rest.dto.JwtSignupRequest;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 
 public interface UserService {

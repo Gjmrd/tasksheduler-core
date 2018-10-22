@@ -1,4 +1,4 @@
-package org.taskscheduler.domain.interfaces.repositories;
+package org.taskscheduler.domain.repositories;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +25,7 @@ public interface TaskRepository extends PagingAndSortingRepository<Task, Long> {
 
     @Query(value = "select t from Task t where (t.creator = :user or :user in elements(t.executors))")
     Page<Task> findUsersTasks(@Param("user") User user, Pageable pageable);
+
+
 
 }

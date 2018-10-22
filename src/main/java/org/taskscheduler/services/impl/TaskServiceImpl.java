@@ -1,4 +1,4 @@
-package org.taskscheduler.domain.services.impl;
+package org.taskscheduler.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -9,10 +9,10 @@ import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.enums.CloseReason;
 import org.taskscheduler.domain.entities.enums.Priority;
 import org.taskscheduler.domain.entities.enums.Status;
-import org.taskscheduler.domain.interfaces.repositories.TaskRepository;
-import org.taskscheduler.domain.interfaces.repositories.UserRepository;
-import org.taskscheduler.domain.services.TaskService;
-import org.taskscheduler.rest.controllers.dto.TaskDto;
+import org.taskscheduler.domain.repositories.TaskRepository;
+import org.taskscheduler.domain.repositories.UserRepository;
+import org.taskscheduler.services.TaskService;
+import org.taskscheduler.rest.dto.TaskDto;
 
 
 import java.util.Date;

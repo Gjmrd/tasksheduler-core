@@ -1,45 +1,46 @@
 package org.taskscheduler.rest.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
-import org.taskscheduler.domain.entities.enums.AuthorityName;
 import org.taskscheduler.domain.entities.enums.CloseReason;
-import org.taskscheduler.domain.entities.enums.Status;
-import org.taskscheduler.domain.services.TaskService;
-import org.taskscheduler.domain.services.UserService;
-import org.taskscheduler.rest.controllers.dto.TaskDto;
+import org.taskscheduler.domain.exceptions.EntityNotFoundException;
+import org.taskscheduler.services.TaskLogService;
+import org.taskscheduler.services.TaskService;
+import org.taskscheduler.services.UserService;
+import org.taskscheduler.rest.dto.TaskDto;
+
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class TaskController {
 
     private TaskService taskService;
     private UserService userService;
+    private TaskLogService taskLogService;
 
     @Autowired
     public TaskController(UserService userService,
-                          TaskService taskService) {
+                          TaskService taskService,
+                          TaskLogService taskLogService) {
         this.taskService = taskService;
         this.userService = userService;
+        this.taskLogService = taskLogService;
+
     }
 
     @RequestMapping(value = "/task", method = RequestMethod.POST)
     public ResponseEntity<?> store(@AuthenticationPrincipal UserDetails user, @RequestBody TaskDto request) throws Exception{
         Task task = taskService.createNew(userService.getByUsername(user.getUsername()), request);
+        //todo async logging
+        CompletableFuture.runAsync(() -> taskLogService.create(task));
         return ResponseEntity.ok(task);
     }
 
@@ -48,40 +49,66 @@ public class TaskController {
     public ResponseEntity<?> freeze(@AuthenticationPrincipal UserDetails userDetails, @RequestParam long taskId) {
         Task task = taskService.getById(taskId);
         if (task == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid task ID");
+            throw new EntityNotFoundException("Invalid Task Id");
         taskService.freeze(task);
+        CompletableFuture.runAsync(() -> taskLogService.create(task));
         return ResponseEntity.ok("ok");
     }
 
     @PreAuthorize("hasPermission(#id, 'TASK_OWNER')")
     @RequestMapping(value = "/task", method = RequestMethod.GET)
-    public ResponseEntity<?> getTask(@RequestParam("id") int id) {
-        return ResponseEntity.ok(taskService.getById(id));
+    public ResponseEntity<?> getTask(@RequestParam("id") long id) {
+        Task task = taskService.getById(id);
+        if (task == null)
+            throw new EntityNotFoundException("Invalid Task Id");
+        return ResponseEntity.ok(task);
     }
 
     @RequestMapping(value = "/task/all", method = RequestMethod.GET)
-    public ResponseEntity<?> getMyTasks(@AuthenticationPrincipal  UserDetails userDetails, Pageable pageable) {
+    public ResponseEntity<?> getMyTasks(@AuthenticationPrincipal  UserDetails userDetails,
+                                        @RequestParam(
+                                                name = "createdFrom",
+                                                required = false
+                                        ) Date createdForm,
+                                        @RequestParam(
+                                                name = "createdTo",
+                                                required = false
+                                        ) Date createdTo,
+                                        Pageable pageable) {
         User user = userService.getByUsername(userDetails.getUsername());
         return ResponseEntity.ok(taskService.getUsersTasks(user, pageable));
     }
 
     @RequestMapping(value = "task/created", method = RequestMethod.GET)
-    public ResponseEntity<?> getCreatedTasks(@AuthenticationPrincipal UserDetails userDetails, Pageable pageable) {
+    public ResponseEntity<?> getCreatedTasks(@AuthenticationPrincipal UserDetails userDetails,
+                                             @RequestParam(
+                                                     name = "createdFrom",
+                                                     required = false
+                                             ) Date createdForm,
+                                             @RequestParam(
+                                                     name = "createdTo",
+                                                     required = false
+                                             ) Date createdTo,
+                                             Pageable pageable) {
         User user = userService.getByUsername(userDetails.getUsername());
-        return ResponseEntity.ok(taskService.getCreated(user, pageable));
+        return ResponseEntity.ok(taskService.getCreatedBetween(createdForm, createdTo, user, pageable));
     }
+
 
     @PreAuthorize("hasPermission(#taskId, 'TASK_OWNER')")
     @RequestMapping(value = "/task/complete", method = RequestMethod.POST)
     public ResponseEntity<?> completeTask(@RequestParam("id") long taskId) {
         Task task = taskService.getById(taskId);
         if (task == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid task ID");
-
+            throw new EntityNotFoundException("Invalid Task Id");
         taskService.close(task, CloseReason.COMPLETED);
+        CompletableFuture.runAsync(() -> taskLogService.create(task));
         //todo send notifications
-        //todo: paginate results
+
         return ResponseEntity.ok("ok");
     }
+
+
+    //todo implement all request select parameters
 
 }

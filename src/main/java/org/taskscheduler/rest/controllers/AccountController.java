@@ -1,11 +1,9 @@
 package org.taskscheduler.rest.controllers;
 
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.http.HTTPException;
 
-import com.sun.deploy.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,15 +19,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.VerificationToken;
-import org.taskscheduler.domain.entities.enums.AuthorityName;
 import org.taskscheduler.domain.exceptions.AuthenticationException;
+import org.taskscheduler.domain.exceptions.EntityNotFoundException;
 import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
 import org.taskscheduler.domain.exceptions.RegistrationException;
-import org.taskscheduler.domain.services.UserService;
-import org.taskscheduler.rest.controllers.dto.JwtAuthenticationResponse;
-import org.taskscheduler.rest.controllers.dto.JwtAuthenticationRequest;
-import org.taskscheduler.rest.controllers.dto.JwtSignUpResponse;
-import org.taskscheduler.rest.controllers.dto.JwtSignupRequest;
+import org.taskscheduler.services.UserService;
+import org.taskscheduler.rest.dto.JwtAuthenticationResponse;
+import org.taskscheduler.rest.dto.JwtAuthenticationRequest;
+import org.taskscheduler.rest.dto.JwtSignUpResponse;
+import org.taskscheduler.rest.dto.JwtSignupRequest;
 import org.taskscheduler.security.JwtTokenUtil;
 import org.taskscheduler.security.JwtUser;
 
@@ -105,7 +103,7 @@ public class AccountController {
     public ResponseEntity<?> resetPassword(@RequestParam("email") String email) {
         User user = userService.getByEmail(email);
         if (user == null)
-            throw new RuntimeException(String.format("user with email %s not found", email),new HTTPException(404));
+            throw new EntityNotFoundException(String.format("user with email %s not found",  email));
         VerificationToken verificationToken = userService.createVerificationToken(user);
         userService.sendVerificationToken(verificationToken);
         return ResponseEntity.ok("check your email");

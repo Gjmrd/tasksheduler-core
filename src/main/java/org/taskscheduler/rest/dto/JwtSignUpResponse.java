@@ -1,4 +1,4 @@
-package org.taskscheduler.rest.controllers.dto;
+package org.taskscheduler.rest.dto;
 
 import org.springframework.security.core.userdetails.UserDetails;
 

@@ -1,4 +1,4 @@
-package org.taskscheduler.domain.services.impl;
+package org.taskscheduler.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.taskscheduler.domain.entities.User;
-import org.taskscheduler.domain.interfaces.repositories.UserRepository;
+import org.taskscheduler.domain.repositories.UserRepository;
 import org.taskscheduler.security.JwtUserFactory;
 
 
