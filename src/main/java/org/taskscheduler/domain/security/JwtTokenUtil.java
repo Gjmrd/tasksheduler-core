@@ -1,4 +1,4 @@
-package org.taskscheduler.security;
+package org.taskscheduler.domain.security;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jsonwebtoken.Claims;

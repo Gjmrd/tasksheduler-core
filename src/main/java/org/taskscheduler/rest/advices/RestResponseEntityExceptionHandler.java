@@ -1,5 +1,6 @@
 package org.taskscheduler.rest.advices;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,4 +23,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Object> handleInvalidVerificationTokenException(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, "Invalid Verification token", new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE, request);
     }
+
+
 }

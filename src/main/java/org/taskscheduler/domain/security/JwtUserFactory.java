@@ -1,4 +1,4 @@
-package org.taskscheduler.security;
+package org.taskscheduler.domain.security;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -17,6 +17,11 @@ public class TaskLog {
     private CloseReason closeReason;
     private Date date;
 
+    public TaskLog(Task task) {
+        this.task = task;
+        this.date = new Date();
+    }
+
     @Id
     @GeneratedValue(generator = "increment")
     @Column(name = "id")

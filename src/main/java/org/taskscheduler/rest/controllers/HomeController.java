@@ -23,16 +23,10 @@ public class HomeController {
         this.taskService = taskService;
     }
 
-    @RequestMapping(value = "/qwe", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String index() throws Exception{
-        Task task = new Task();
-        task.setCaption("waqdwqdqdwqd");
-        taskService.save(task);
-        throw new Exception("checking exceptions");
+
 
         //todo complete controllers
 
-    }
 
 
     @RequestMapping(value = "/test", produces = MediaType.TEXT_PLAIN_VALUE)

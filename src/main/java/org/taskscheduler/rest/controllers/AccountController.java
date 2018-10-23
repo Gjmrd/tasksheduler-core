@@ -28,8 +28,8 @@ import org.taskscheduler.rest.dto.JwtAuthenticationResponse;
 import org.taskscheduler.rest.dto.JwtAuthenticationRequest;
 import org.taskscheduler.rest.dto.JwtSignUpResponse;
 import org.taskscheduler.rest.dto.JwtSignupRequest;
-import org.taskscheduler.security.JwtTokenUtil;
-import org.taskscheduler.security.JwtUser;
+import org.taskscheduler.domain.security.JwtTokenUtil;
+import org.taskscheduler.domain.security.JwtUser;
 
 
 @RestController

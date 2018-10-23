@@ -1,4 +1,4 @@
-package org.taskscheduler.security.ebac;
+package org.taskscheduler.domain.security.ebac;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;

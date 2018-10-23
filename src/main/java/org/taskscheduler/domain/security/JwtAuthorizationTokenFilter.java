@@ -1,4 +1,4 @@
-package org.taskscheduler.security;
+package org.taskscheduler.domain.security;
 
 
 import io.jsonwebtoken.ExpiredJwtException;

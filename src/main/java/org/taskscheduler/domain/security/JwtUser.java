@@ -1,4 +1,4 @@
-package org.taskscheduler.security;
+package org.taskscheduler.domain.security;
 
 import java.util.Collection;
 import java.util.Date;

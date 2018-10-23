@@ -11,7 +11,6 @@ import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.enums.CloseReason;
 import org.taskscheduler.domain.exceptions.EntityNotFoundException;
-import org.taskscheduler.services.TaskLogService;
 import org.taskscheduler.services.TaskService;
 import org.taskscheduler.services.UserService;
 import org.taskscheduler.rest.dto.TaskDto;
@@ -24,15 +23,12 @@ public class TaskController {
 
     private TaskService taskService;
     private UserService userService;
-    private TaskLogService taskLogService;
 
     @Autowired
     public TaskController(UserService userService,
-                          TaskService taskService,
-                          TaskLogService taskLogService) {
+                          TaskService taskService) {
         this.taskService = taskService;
         this.userService = userService;
-        this.taskLogService = taskLogService;
 
     }
 
@@ -40,7 +36,6 @@ public class TaskController {
     public ResponseEntity<?> store(@AuthenticationPrincipal UserDetails user, @RequestBody TaskDto request) throws Exception{
         Task task = taskService.createNew(userService.getByUsername(user.getUsername()), request);
         //todo async logging
-        CompletableFuture.runAsync(() -> taskLogService.create(task));
         return ResponseEntity.ok(task);
     }
 
@@ -51,7 +46,6 @@ public class TaskController {
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");
         taskService.freeze(task);
-        CompletableFuture.runAsync(() -> taskLogService.create(task));
         return ResponseEntity.ok("ok");
     }
 
@@ -66,14 +60,8 @@ public class TaskController {
 
     @RequestMapping(value = "/task/all", method = RequestMethod.GET)
     public ResponseEntity<?> getMyTasks(@AuthenticationPrincipal  UserDetails userDetails,
-                                        @RequestParam(
-                                                name = "createdFrom",
-                                                required = false
-                                        ) Date createdForm,
-                                        @RequestParam(
-                                                name = "createdTo",
-                                                required = false
-                                        ) Date createdTo,
+                                        @RequestParam(name = "createdFrom", required = false) Date createdForm,
+                                        @RequestParam(name = "createdTo", required = false) Date createdTo,
                                         Pageable pageable) {
         User user = userService.getByUsername(userDetails.getUsername());
         return ResponseEntity.ok(taskService.getUsersTasks(user, pageable));
@@ -81,14 +69,8 @@ public class TaskController {
 
     @RequestMapping(value = "task/created", method = RequestMethod.GET)
     public ResponseEntity<?> getCreatedTasks(@AuthenticationPrincipal UserDetails userDetails,
-                                             @RequestParam(
-                                                     name = "createdFrom",
-                                                     required = false
-                                             ) Date createdForm,
-                                             @RequestParam(
-                                                     name = "createdTo",
-                                                     required = false
-                                             ) Date createdTo,
+                                             @RequestParam(name = "createdFrom", required = false) Date createdForm,
+                                             @RequestParam(name = "createdTo", required = false) Date createdTo,
                                              Pageable pageable) {
         User user = userService.getByUsername(userDetails.getUsername());
         return ResponseEntity.ok(taskService.getCreatedBetween(createdForm, createdTo, user, pageable));
@@ -102,7 +84,6 @@ public class TaskController {
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");
         taskService.close(task, CloseReason.COMPLETED);
-        CompletableFuture.runAsync(() -> taskLogService.create(task));
         //todo send notifications
 
         return ResponseEntity.ok("ok");

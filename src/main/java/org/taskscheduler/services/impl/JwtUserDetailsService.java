@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.repositories.UserRepository;
-import org.taskscheduler.security.JwtUserFactory;
+import org.taskscheduler.domain.security.JwtUserFactory;
 
 
 @Service

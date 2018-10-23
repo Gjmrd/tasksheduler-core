@@ -1,4 +1,4 @@
-package org.taskscheduler.config;
+package org.taskscheduler.domain.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,8 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.taskscheduler.services.impl.JwtUserDetailsService;
-import org.taskscheduler.security.JwtAuthenticationEntryPoint;
-import org.taskscheduler.security.JwtAuthorizationTokenFilter;
+import org.taskscheduler.domain.security.JwtAuthenticationEntryPoint;
+import org.taskscheduler.domain.security.JwtAuthorizationTokenFilter;
 
 @Configuration
 @EnableWebSecurity

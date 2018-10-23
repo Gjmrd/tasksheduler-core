@@ -5,10 +5,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.taskscheduler.domain.entities.PageInfo;
 import org.taskscheduler.domain.entities.Task;
+import org.taskscheduler.domain.entities.TaskLog;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.enums.CloseReason;
 import org.taskscheduler.domain.entities.enums.Priority;
 import org.taskscheduler.domain.entities.enums.Status;
+import org.taskscheduler.domain.repositories.TaskLogRepository;
 import org.taskscheduler.domain.repositories.TaskRepository;
 import org.taskscheduler.domain.repositories.UserRepository;
 import org.taskscheduler.services.TaskService;
@@ -25,12 +27,15 @@ public class TaskServiceImpl implements TaskService {
 
     private TaskRepository taskRepository;
     private UserRepository userRepository;
+    private TaskLogRepository taskLogRepository;
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           TaskLogRepository taskLogRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.taskLogRepository = taskLogRepository;
     }
 
     @Override
@@ -55,12 +60,14 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(Status.ONGOING);
         task.setCreator(user);
         future.get();
+        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(task)));
         return taskRepository.save(task);
     }
 
     @Override
     public void freeze(Task task) {
         task.setStatus(Status.FREEZED);
+        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(task)));
         taskRepository.save(task);
     }
 
@@ -76,25 +83,16 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public PageInfo<Task> getAll(Pageable pageable)  {
-
         return new PageInfo<>(taskRepository.findAll(pageable));
     }
 
-    @Override
-    public void save(Task task) {
-        taskRepository.save(task);
-    }
-
-    @Override
-    public void delete(Task task) {
-        taskRepository.delete(task);
-    }
 
     @Override
     public void close(Task task, CloseReason reason) {
         task.setStatus(Status.CLOSED);
         task.setCloseReason(reason);
         task.setClosedAt(new Date());
+        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(task)));
         taskRepository.save(task);
     }
 }
