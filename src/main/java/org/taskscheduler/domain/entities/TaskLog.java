@@ -13,12 +13,17 @@ public class TaskLog {
     private long id;
     private User subject;
     private Task task;
-    private Status status;
-    private CloseReason closeReason;
+    private String field;
+    private String oldValue;
+    private String newValue;
     private Date date;
 
-    public TaskLog(Task task) {
+    public TaskLog(User user, Task task, String field, String oldValue, String newValue) {
+        this.subject = user;
         this.task = task;
+        this.field = field;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
         this.date = new Date();
     }
 
@@ -54,25 +59,6 @@ public class TaskLog {
         this.task = task;
     }
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    @Column(name = "closeReason")
-    @Enumerated(EnumType.STRING)
-    public CloseReason getCloseReason() {
-        return closeReason;
-    }
-
-    public void setCloseReason(CloseReason closeReason) {
-        this.closeReason = closeReason;
-    }
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dateTime")
@@ -82,5 +68,32 @@ public class TaskLog {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Column(name = "field")
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
+
+    @Column(name = "oldValue")
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    @Column(name = "newValue")
+    public String getNewValue() {
+        return newValue;
+    }
+
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
     }
 }

@@ -26,7 +26,6 @@ public class Task implements Serializable{
     private User responsible;
     private CloseReason closeReason = CloseReason.NONE;
     private Date deadlineAt;
-    private Date closedAt;
     private Date createdAt;
     private Date updatedAt;
 
@@ -118,15 +117,6 @@ public class Task implements Serializable{
         this.deadlineAt = deadlineAt;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "closedAt")
-    public Date getClosedAt() {
-        return closedAt;
-    }
-
-    public void setClosedAt(Date closedAt) {
-        this.closedAt = closedAt;
-    }
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

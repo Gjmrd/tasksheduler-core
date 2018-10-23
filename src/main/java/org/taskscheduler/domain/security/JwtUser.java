@@ -8,13 +8,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-
+import org.taskscheduler.domain.entities.User;
 
 
 public class JwtUser implements UserDetails {
 
     private final Long id;
+    private final User userEntity;
     private final String username;
     private final String password;
     private final String lastName;
@@ -26,6 +26,7 @@ public class JwtUser implements UserDetails {
 
     public JwtUser(
             Long id,
+            User userEntity,
             String username,
             String password,
             String lastName,
@@ -36,6 +37,7 @@ public class JwtUser implements UserDetails {
             Date lastPasswordResetDate
     ) {
         this.id = id;
+        this.userEntity = userEntity;
         this.username = username;
         this.email = email;
         this.lastName = lastName;
@@ -109,5 +111,9 @@ public class JwtUser implements UserDetails {
 
     public boolean hasRole(String authority) {
         return this.authorities.contains(new SimpleGrantedAuthority(authority));
+    }
+
+    public User getUserEntity() {
+        return userEntity;
     }
 }

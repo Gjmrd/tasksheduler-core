@@ -15,8 +15,8 @@ public interface TaskService {
     PageInfo<Task> getAll(Pageable pageable);
     PageInfo<Task> getUsersTasks(User user, Pageable pageable);
     Task createNew(User user, TaskDto taskDto) throws Exception;
-    void close(Task task, CloseReason reason);
-    void freeze(Task task);
+    void close(User user, Task task, CloseReason reason);
+    void freeze(User user, Task task);
     PageInfo<Task> getCreated(User user, Pageable pageable);
     PageInfo<Task> getCreatedBetween(Date startDate, Date endDate, User user, Pageable pageable) ;
 

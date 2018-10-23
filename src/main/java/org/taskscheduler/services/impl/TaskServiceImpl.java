@@ -60,14 +60,14 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(Status.ONGOING);
         task.setCreator(user);
         future.get();
-        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(task)));
+        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(user, task, "status", Status.NONE.toString(), Status.UNACCEPTED.toString() )));
         return taskRepository.save(task);
     }
 
     @Override
-    public void freeze(Task task) {
+    public void freeze(User user, Task task) {
         task.setStatus(Status.FREEZED);
-        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(task)));
+        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(user, task, "status", task.getStatus().toString(), Status.FREEZED.toString())));
         taskRepository.save(task);
     }
 
@@ -88,11 +88,14 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public void close(Task task, CloseReason reason) {
+    public void close(User user, Task task, CloseReason reason) {
         task.setStatus(Status.CLOSED);
         task.setCloseReason(reason);
-        task.setClosedAt(new Date());
-        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(task)));
+        CompletableFuture.runAsync(() -> {
+            taskLogRepository.save(new TaskLog(user, task, "status", task.getStatus().toString(), Status.CLOSED.toString()));
+            taskLogRepository.save(new TaskLog(user, task, "closeReason", CloseReason.NONE.toString(), reason.toString()));
+        });
+
         taskRepository.save(task);
     }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 public enum Status {
 
+    NONE,
     UNACCEPTED,
     ONGOING,
     FREEZED,
