@@ -30,17 +30,20 @@ public class TaskController {
 
     }
 
+
+    //todo commenting task changes
+
     @RequestMapping(value = "/task", method = RequestMethod.POST)
     public ResponseEntity<?> store(@AuthenticationPrincipal JwtUser userDetails, @RequestBody TaskDto request) throws Exception{
         Task task = taskService.createNew(userDetails.getId(), request);
-        //todo async logging
         return ResponseEntity.ok(task);
     }
 
     @PreAuthorize("hasPermission(#taskId, 'TASK_CREATOR')")
     @RequestMapping(value = "/task/freeze", method = RequestMethod.POST)
     public ResponseEntity<?> freeze(@AuthenticationPrincipal JwtUser userDetails,
-                                    @RequestParam long taskId) {
+                                    @RequestParam("id") long taskId,
+                                    @RequestParam("comment") String comment) {
         Task task = taskService.getById(taskId);
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");
