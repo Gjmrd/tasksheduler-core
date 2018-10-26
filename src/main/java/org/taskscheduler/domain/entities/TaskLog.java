@@ -12,14 +12,15 @@ import java.util.Date;
 public class TaskLog {
     private long id;
     private User subject;
+    private long subjectId;
     private Task task;
     private String field;
     private String oldValue;
     private String newValue;
     private Date date;
 
-    public TaskLog(User user, Task task, String field, String oldValue, String newValue) {
-        this.subject = user;
+    public TaskLog(long subjectId, Task task, String field, String oldValue, String newValue) {
+        this.subjectId = subjectId;
         this.task = task;
         this.field = field;
         this.oldValue = oldValue;
@@ -95,5 +96,14 @@ public class TaskLog {
 
     public void setNewValue(String newValue) {
         this.newValue = newValue;
+    }
+
+    @Column(name = "subjectId")
+    public long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(long subjectId) {
+        this.subjectId = subjectId;
     }
 }

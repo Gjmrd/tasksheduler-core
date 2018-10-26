@@ -44,12 +44,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public PageInfo<Task> getUsersTasks(User user, Pageable pageable) {
-        return new PageInfo<>(taskRepository.findUsersTasks(user, pageable));
+    public PageInfo<Task> getUsersTasks(Date from, Date to, User user, Pageable pageable) {
+        return new PageInfo<>(taskRepository.findUsersTasks(from, to, user, pageable));
     }
 
     @Override
-    public Task createNew(User user, TaskDto taskDto) throws ExecutionException, InterruptedException {
+    public Task createNew(long userId, TaskDto taskDto) throws ExecutionException, InterruptedException {
         Task task = new Task();
         CompletableFuture future = CompletableFuture
                 .supplyAsync(() -> userRepository.findByUsernameArray(taskDto.getExecutors()))
@@ -58,27 +58,27 @@ public class TaskServiceImpl implements TaskService {
         task.setDescription(taskDto.getDescription());
         task.setPriority(Priority.HIGHEST);
         task.setStatus(Status.ONGOING);
-        task.setCreator(user);
+        task.setCreatorId(userId);
         future.get();
-        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(user, task, "status", Status.NONE.toString(), Status.UNACCEPTED.toString() )));
+        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(userId, task, "status", Status.NONE.toString(), Status.UNACCEPTED.toString() )));
         return taskRepository.save(task);
     }
 
     @Override
-    public void freeze(User user, Task task) {
+    public void freeze(long userId, Task task) {
         task.setStatus(Status.FREEZED);
-        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(user, task, "status", task.getStatus().toString(), Status.FREEZED.toString())));
+        CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(userId, task, "status", task.getStatus().toString(), Status.FREEZED.toString())));
         taskRepository.save(task);
     }
 
     @Override
-    public PageInfo<Task> getCreated(User user, Pageable pageable) {
-        return new PageInfo<>(taskRepository.findCreated(user, pageable));
+    public PageInfo<Task> getCreated(Date from, Date to, long userId, Pageable pageable) {
+        return new PageInfo<>(taskRepository.findCreated(userId, pageable));
     }
 
     @Override
-    public PageInfo<Task> getCreatedBetween(Date startDate, Date endDate, User user, Pageable pageable) {
-        return new PageInfo<>(taskRepository.findCreatedBetween(startDate, endDate, user, pageable));
+    public PageInfo<Task> getCreatedBetween(Date startDate, Date endDate, long userId, Pageable pageable) {
+        return new PageInfo<>(taskRepository.findCreatedBetween(startDate, endDate, userId, pageable));
     }
 
     @Override
@@ -88,12 +88,12 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public void close(User user, Task task, CloseReason reason) {
+    public void close(long userId, Task task, CloseReason reason) {
         task.setStatus(Status.CLOSED);
         task.setCloseReason(reason);
         CompletableFuture.runAsync(() -> {
-            taskLogRepository.save(new TaskLog(user, task, "status", task.getStatus().toString(), Status.CLOSED.toString()));
-            taskLogRepository.save(new TaskLog(user, task, "closeReason", CloseReason.NONE.toString(), reason.toString()));
+            taskLogRepository.save(new TaskLog(userId, task, "status", task.getStatus().toString(), Status.CLOSED.toString()));
+            taskLogRepository.save(new TaskLog(userId, task, "closeReason", CloseReason.NONE.toString(), reason.toString()));
         });
 
         taskRepository.save(task);

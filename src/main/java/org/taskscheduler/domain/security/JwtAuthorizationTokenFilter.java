@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,11 +31,9 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final String tokenHeader;
 
-    public JwtAuthorizationTokenFilter(@Qualifier("jwtUserDetailsService")
-                                               UserDetailsService userDetailsService,
+    public JwtAuthorizationTokenFilter(@Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService,
                                        JwtTokenUtil jwtTokenUtil,
-                                       @Value("${jwt.header}")
-                                               String tokenHeader) {
+                                       @Value("${jwt.header}") String tokenHeader) {
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.tokenHeader = tokenHeader;
@@ -67,7 +66,15 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
             // It is not compelling necessary to load the use details from the database. You could also store the information
             // in the token and read it from it. It's up to you ;)
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            JwtUser userDetails = new JwtUser(
+                    jwtTokenUtil.getUserIdFromToken(authToken),
+                    jwtTokenUtil.getUsernameFromToken(authToken),
+                    null,
+                    jwtTokenUtil.getRolesFromToken(authToken),
+                    true,
+                    null);
+
+            //UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
             // the database compellingly. Again it's up to you ;)

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.enums.CloseReason;
@@ -33,7 +32,7 @@ public class TaskController {
 
     @RequestMapping(value = "/task", method = RequestMethod.POST)
     public ResponseEntity<?> store(@AuthenticationPrincipal JwtUser userDetails, @RequestBody TaskDto request) throws Exception{
-        Task task = taskService.createNew(userDetails.getUserEntity(), request);
+        Task task = taskService.createNew(userDetails.getId(), request);
         //todo async logging
         return ResponseEntity.ok(task);
     }
@@ -45,7 +44,7 @@ public class TaskController {
         Task task = taskService.getById(taskId);
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");
-        taskService.freeze(userDetails.getUserEntity(), task);
+        taskService.freeze(userDetails.getId(), task);
         return ResponseEntity.ok("ok");
     }
 
@@ -58,32 +57,31 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
-    @RequestMapping(value = "/task/all", method = RequestMethod.GET)
+    @RequestMapping(value = "/tasks/all", method = RequestMethod.GET)
     public ResponseEntity<?> getMyTasks(@AuthenticationPrincipal JwtUser userDetails,
-                                        @RequestParam(name = "createdFrom", required = false) Date createdForm,
-                                        @RequestParam(name = "createdTo", required = false) Date createdTo,
+                                        @RequestParam(name = "from", required = false) Date from,
+                                        @RequestParam(name = "to", required = false) Date to,
                                         Pageable pageable) {
-        //return ResponseEntity.ok(userDetails.getUserEntity());
-        return ResponseEntity.ok(taskService.getUsersTasks(userDetails.getUserEntity(), pageable));
+        return ResponseEntity.ok(taskService.getUsersTasks(from, to, userService.getByUsername(userDetails.getUsername()), pageable));
     }
 
-    @RequestMapping(value = "task/created", method = RequestMethod.GET)
+    @RequestMapping(value = "tasks/created", method = RequestMethod.GET)
     public ResponseEntity<?> getCreatedTasks(@AuthenticationPrincipal JwtUser userDetails,
-                                             @RequestParam(name = "createdFrom", required = false) Date createdForm,
-                                             @RequestParam(name = "createdTo", required = false) Date createdTo,
+                                             @RequestParam(name = "from", required = false) Date from,
+                                             @RequestParam(name = "to", required = false) Date to,
                                              Pageable pageable) {
-        return ResponseEntity.ok(taskService.getCreatedBetween(createdForm, createdTo, userDetails.getUserEntity(), pageable));
+        return ResponseEntity.ok(taskService.getCreatedBetween(from, to, userDetails.getId(), pageable));
     }
 
 
     @PreAuthorize("hasPermission(#taskId, 'TASK_OWNER')")
-    @RequestMapping(value = "/task/complete", method = RequestMethod.POST)
+    @RequestMapping(value = "/tasks/complete", method = RequestMethod.POST)
     public ResponseEntity<?> completeTask(@AuthenticationPrincipal JwtUser userDetails,
                                           @RequestParam("id") long taskId) {
         Task task = taskService.getById(taskId);
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");
-        taskService.close(userDetails.getUserEntity(), task, CloseReason.COMPLETED);
+        taskService.close(userDetails.getId(), task, CloseReason.COMPLETED);
         //todo send notifications
 
         return ResponseEntity.ok("ok");

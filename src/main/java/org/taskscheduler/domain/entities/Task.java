@@ -22,6 +22,7 @@ public class Task implements Serializable{
     private String caption;
     private String description;
     private User creator;
+    private long creatorId;
     private List<User> executors;
     private User responsible;
     private CloseReason closeReason = CloseReason.NONE;
@@ -144,7 +145,7 @@ public class Task implements Serializable{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "closeReason", nullable = false)
-    @ColumnDefault("none")
+    @ColumnDefault("NONE")
     public CloseReason getCloseReason() {
         return closeReason == null ? CloseReason.NONE : closeReason;
     }
@@ -159,4 +160,12 @@ public class Task implements Serializable{
         return status == Status.CLOSED;
     }
 
+    @Column(name = "creatorId")
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
+    }
 }

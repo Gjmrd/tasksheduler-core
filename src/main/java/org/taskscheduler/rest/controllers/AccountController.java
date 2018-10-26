@@ -23,6 +23,7 @@ import org.taskscheduler.domain.exceptions.AuthenticationException;
 import org.taskscheduler.domain.exceptions.EntityNotFoundException;
 import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
 import org.taskscheduler.domain.exceptions.RegistrationException;
+import org.taskscheduler.domain.security.JwtUserFactory;
 import org.taskscheduler.services.UserService;
 import org.taskscheduler.rest.dto.JwtAuthenticationResponse;
 import org.taskscheduler.rest.dto.JwtAuthenticationRequest;
@@ -61,11 +62,17 @@ public class AccountController {
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
         // Reload password post-security so we can generate the token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        User user = userService.getByUsername(authenticationRequest.getUsername());
+        final JwtUser userDetails = JwtUserFactory.create(user);//userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         // Return the token
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+    }
+
+    @GetMapping("/authtest")
+    public ResponseEntity<?> test(@AuthenticationPrincipal JwtUser user) {
+        return ResponseEntity.ok(user);
     }
 
     @RequestMapping(value = "/auth/signup", method = RequestMethod.POST)
@@ -80,7 +87,9 @@ public class AccountController {
         User user = userService.createUser(request);
         authenticate(request.getUsername(), request.getPassword());
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        //final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        final JwtUser userDetails = JwtUserFactory.create(user);
+
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(new JwtSignUpResponse(token, userDetails));

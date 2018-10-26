@@ -14,17 +14,20 @@ import java.util.Date;
 import java.util.List;
 
 public interface TaskRepository extends PagingAndSortingRepository<Task, Long> {
-    @Query(value = "select t from Task t where t.creator = :user and t.createdAt between :startDate and :endDate")
+    @Query(value = "select t from Task t where t.creatorId = :userId and t.createdAt between :startDate and :endDate")
     Page<Task> findCreatedBetween(@Param("startDate") Date startDate,
                                   @Param("endDate") Date endDate,
-                                  @Param("user") User user,
+                                  @Param("userId") long userId,
                                   Pageable pageable);
 
-    @Query(value = "select t from Task t where t.creator = :user")
-    Page<Task> findCreated(@Param("user") User user, Pageable pageable);
+    @Query(value = "select t from Task t where t.creatorId = :userId")
+    Page<Task> findCreated(@Param("userId") long userId, Pageable pageable);
 
-    @Query(value = "select t from Task t where (t.creator = :user or :user in elements(t.executors))")
-    Page<Task> findUsersTasks(@Param("user") User user, Pageable pageable);
+    @Query(value = "select t from Task t where (t.creator = :user or :user in elements(t.executors)) and t.createdAt between :startDate and :endDate ")
+    Page<Task> findUsersTasks(@Param("startDate") Date startDate,
+                              @Param("endDate") Date endDate,
+                              @Param("user") User user,
+                              Pageable pageable);
 
 
 

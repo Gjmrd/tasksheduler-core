@@ -8,21 +8,19 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Component
 public class JwtTokenUtil implements Serializable {
 
-
-    static final String CLAIM_KEY_USERNAME = "sub";
-    static final String CLAIM_KEY_CREATED = "iat";
 
     @SuppressFBWarnings(value = "SE_BAD_FIELD", justification = "It's okay here")
     private Clock clock = DefaultClock.INSTANCE;
@@ -32,6 +30,8 @@ public class JwtTokenUtil implements Serializable {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+
+
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
@@ -47,7 +47,25 @@ public class JwtTokenUtil implements Serializable {
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
+
     }
+
+    public long getUserIdFromToken(String token) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claims.get("userid", Long.class);
+    }
+
+    public List<SimpleGrantedAuthority>  getRolesFromToken(String token) {
+        final Claims claims = getAllClaimsFromToken(token);
+
+        List<SimpleGrantedAuthority> list = Arrays.asList(claims.get("roles").toString().split(",")).stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        return list;
+    }
+
+
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
@@ -70,8 +88,12 @@ public class JwtTokenUtil implements Serializable {
         return false;
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(JwtUser userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userid", userDetails.getId());
+        claims.put("roles", userDetails.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .collect(Collectors.joining(",")));
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
