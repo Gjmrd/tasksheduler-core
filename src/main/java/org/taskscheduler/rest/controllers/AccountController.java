@@ -61,12 +61,11 @@ public class AccountController {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-        // Reload password post-security so we can generate the token
+
         User user = userService.getByUsername(authenticationRequest.getUsername());
         final JwtUser userDetails = JwtUserFactory.create(user);//userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        // Return the token
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
@@ -87,7 +86,6 @@ public class AccountController {
         User user = userService.createUser(request);
         authenticate(request.getUsername(), request.getPassword());
 
-        //final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         final JwtUser userDetails = JwtUserFactory.create(user);
 
         final String token = jwtTokenUtil.generateToken(userDetails);
@@ -151,9 +149,7 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
-    /**
-     * Authenticates the user. If something is wrong, an {@link AuthenticationException} will be thrown
-     */
+
     private void authenticate(String username, String password) {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
