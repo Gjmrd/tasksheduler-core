@@ -1,5 +1,6 @@
 package org.taskscheduler.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -79,7 +80,7 @@ public class Task implements Serializable{
     }
 
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "creatorId", referencedColumnName = "id")
+    @JoinColumn(name = "creatorId", referencedColumnName = "id", insertable = false, updatable = false)
     public User getCreator() {
         return creator;
     }
@@ -88,8 +89,9 @@ public class Task implements Serializable{
         this.creator = creator;
     }
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable
+    @JsonIgnore
     public List<User> getExecutors() {
         return executors;
     }

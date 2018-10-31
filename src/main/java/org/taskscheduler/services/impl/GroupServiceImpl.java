@@ -1,8 +1,10 @@
 package org.taskscheduler.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.taskscheduler.domain.entities.Group;
+import org.taskscheduler.domain.entities.PageInfo;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.repositories.GroupRepository;
 import org.taskscheduler.domain.repositories.UserRepository;
@@ -25,6 +27,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public PageInfo<User> getMembersByGroupId(long id, Pageable pageable) {
+        return new PageInfo<>(groupRepository.getMembersByGroupId(id, pageable));
+    }
+
+    @Override
     public Group getById(long id) {
         return groupRepository.findById(id).orElse(null);
     }
@@ -39,6 +46,8 @@ public class GroupServiceImpl implements GroupService {
         future.get();
         return groupRepository.save(group);
     }
+
+
 
     @Override
     public Group addUserToGroup(Group group, User user) {

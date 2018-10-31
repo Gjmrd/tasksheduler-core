@@ -33,17 +33,17 @@ public class TaskController {
 
     //todo commenting task changes
 
-    @RequestMapping(value = "/task", method = RequestMethod.POST)
+    @PostMapping("/tasks")
     public ResponseEntity<?> store(@AuthenticationPrincipal JwtUser userDetails, @RequestBody TaskDto request) throws Exception{
         Task task = taskService.createNew(userDetails.getId(), request);
         return ResponseEntity.ok(task);
     }
 
     @PreAuthorize("hasPermission(#taskId, 'TASK_CREATOR')")
-    @RequestMapping(value = "/task/freeze", method = RequestMethod.POST)
+    @PostMapping("/tasks/{id}/freeze")
     public ResponseEntity<?> freeze(@AuthenticationPrincipal JwtUser userDetails,
-                                    @RequestParam("id") long taskId,
-                                    @RequestParam("comment") String comment) {
+                                    @PathVariable("id") long taskId,
+                                    @RequestParam(name = "comment", required = false) String comment) {
         Task task = taskService.getById(taskId);
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");
@@ -51,16 +51,23 @@ public class TaskController {
         return ResponseEntity.ok("ok");
     }
 
+
     @PreAuthorize("hasPermission(#id, 'TASK_OWNER')")
-    @RequestMapping(value = "/task", method = RequestMethod.GET)
-    public ResponseEntity<?> getTask(@RequestParam("id") long id) {
+    @GetMapping("/tasks/{id}")
+    public ResponseEntity<?> getTask(@PathVariable("id") long id) {
         Task task = taskService.getById(id);
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");
         return ResponseEntity.ok(task);
     }
 
-    @RequestMapping(value = "/tasks/all", method = RequestMethod.GET)
+    @PreAuthorize("hasPermission(#id, 'TASK_OWNER')")
+    @GetMapping("/task/{id}/executors")
+    public ResponseEntity<?> getExecutorsByTaskId(@PathVariable("id") long id, Pageable pageable) {
+        return ResponseEntity.ok(taskService.getExecutorsByTaskId(id, pageable));
+    }
+
+    @GetMapping("/tasks/all")
     public ResponseEntity<?> getMyTasks(@AuthenticationPrincipal JwtUser userDetails,
                                         @RequestParam(name = "from", required = false) Date from,
                                         @RequestParam(name = "to", required = false) Date to,
@@ -68,7 +75,7 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getUsersTasks(from, to, userService.getByUsername(userDetails.getUsername()), pageable));
     }
 
-    @RequestMapping(value = "tasks/created", method = RequestMethod.GET)
+    @GetMapping("tasks/created")
     public ResponseEntity<?> getCreatedTasks(@AuthenticationPrincipal JwtUser userDetails,
                                              @RequestParam(name = "from", required = false) Date from,
                                              @RequestParam(name = "to", required = false) Date to,
@@ -78,9 +85,9 @@ public class TaskController {
 
 
     @PreAuthorize("hasPermission(#taskId, 'TASK_OWNER')")
-    @RequestMapping(value = "/tasks/complete", method = RequestMethod.POST)
+    @PostMapping("/tasks/{id}/complete")
     public ResponseEntity<?> completeTask(@AuthenticationPrincipal JwtUser userDetails,
-                                          @RequestParam("id") long taskId) {
+                                          @PathVariable("id") long taskId) {
         Task task = taskService.getById(taskId);
         if (task == null)
             throw new EntityNotFoundException("Invalid Task Id");

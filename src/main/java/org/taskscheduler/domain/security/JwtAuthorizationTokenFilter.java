@@ -52,9 +52,11 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(authToken);
             } catch (IllegalArgumentException e) {
-                logger.error("an error occured during getting username from token", e);
+                request.setAttribute("exception", e.getMessage());
+                //logger.error("an error occured during getting username from token", e);
             } catch (ExpiredJwtException e) {
-                logger.warn("the token is expired and not valid anymore", e);
+                request.setAttribute("exception", e.getMessage());
+                //logger.warn("the token is expired and not valid anymore", e);
             }
         } else {
             logger.warn("couldn't find bearer string, will ignore the header");
@@ -85,5 +87,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
         }
 
         chain.doFilter(request, response);
+
+
     }
 }

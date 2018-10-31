@@ -19,5 +19,6 @@ public interface TaskService {
     void freeze(long userId, Task task);
     PageInfo<Task> getCreated(Date from, Date to, long userId, Pageable pageable);
     PageInfo<Task> getCreatedBetween(Date startDate, Date endDate, long userId, Pageable pageable) ;
+    PageInfo<User> getExecutorsByTaskId(long taskId, Pageable pageable);
 
 }

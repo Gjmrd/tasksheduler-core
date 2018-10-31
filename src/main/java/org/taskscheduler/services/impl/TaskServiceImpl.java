@@ -49,6 +49,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public PageInfo<User> getExecutorsByTaskId(long taskId, Pageable pageable) {
+        return new PageInfo<>(taskRepository.getExecutorsByTaskId(taskId, pageable));
+    }
+
+    @Override
     public Task createNew(long userId, TaskDto taskDto) throws ExecutionException, InterruptedException {
         Task task = new Task();
         CompletableFuture future = CompletableFuture

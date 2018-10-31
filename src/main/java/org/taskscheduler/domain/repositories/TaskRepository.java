@@ -29,6 +29,7 @@ public interface TaskRepository extends PagingAndSortingRepository<Task, Long> {
                               @Param("user") User user,
                               Pageable pageable);
 
-
+    @Query(value = "select t.executors from Task t where t.id = :taskId")
+    Page<User> getExecutorsByTaskId(@Param("task")long taskId, Pageable pageable);
 
 }

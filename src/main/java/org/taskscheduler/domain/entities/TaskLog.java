@@ -40,7 +40,7 @@ public class TaskLog {
     }
 
     @ManyToOne
-    @JoinColumn(name = "subjectId", referencedColumnName = "id")
+    @JoinColumn(name = "subjectId", referencedColumnName = "id", insertable = false, updatable = false)
     public User getSubject() {
         return subject;
     }
