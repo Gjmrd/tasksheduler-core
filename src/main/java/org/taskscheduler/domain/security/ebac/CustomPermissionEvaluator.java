@@ -55,7 +55,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
                 break;
 
             case "TASK_CREATOR" :
-                if (task.getCreator() != user)
+                if (!task.getCreator().equals(user))
                     return false;
                 break;
             default:
