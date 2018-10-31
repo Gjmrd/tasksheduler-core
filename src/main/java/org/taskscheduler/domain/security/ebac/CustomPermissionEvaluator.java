@@ -50,7 +50,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             return true;
         switch (permission) {
             case "TASK_OWNER" :
-                if ((task.getCreator() != user) && (!task.getExecutors().contains(user)))
+                if (!task.getCreator().equals(user) && (!task.getExecutors().contains(user)))
                     return false;
                 break;
 

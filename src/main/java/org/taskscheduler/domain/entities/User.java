@@ -173,4 +173,9 @@ public class User implements Serializable{
     public void setUsername(String username) {
         this.username = username;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.id == ((User)obj).getId();
+    }
 }
