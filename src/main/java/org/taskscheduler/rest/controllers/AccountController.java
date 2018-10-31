@@ -56,7 +56,7 @@ public class AccountController {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/auth", method = RequestMethod.POST)
+    @PostMapping(value = "/auth")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -74,7 +74,7 @@ public class AccountController {
         return ResponseEntity.ok(user);
     }
 
-    @RequestMapping(value = "/auth/signup", method = RequestMethod.POST)
+    @PostMapping("/auth/signup")
     public ResponseEntity<?> signup(@RequestBody JwtSignupRequest request) throws Exception{
         // checking if username is already in use
         if (userService.userExistsByUsername(request.getUsername())) {
@@ -93,7 +93,7 @@ public class AccountController {
         return ResponseEntity.ok(new JwtSignUpResponse(token, userDetails));
     }
 
-    @RequestMapping(value = "/changepassword", method = RequestMethod.POST)
+    @PostMapping("/changepassword")
     public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserDetails userDetails,
                                  @RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword) throws Exception{
@@ -106,7 +106,7 @@ public class AccountController {
             throw new AuthenticationException("Wrong password", new HTTPException(400));
     }
 
-    @RequestMapping(value = "/password/reset", method = RequestMethod.POST)
+    @PostMapping("/password/reset")
     public ResponseEntity<?> resetPassword(@RequestParam("email") String email) {
         User user = userService.getByEmail(email);
         if (user == null)
@@ -116,7 +116,7 @@ public class AccountController {
         return ResponseEntity.ok("check your email");
     }
 
-    @RequestMapping(value = "/password/reset", method = RequestMethod.GET)
+    @GetMapping(value = "/password/reset")
     public ResponseEntity<?> confirmPasswordReset(@RequestParam("token") String token,
                                                   @RequestParam("newPassword") String newPassword) {
         try {
@@ -129,7 +129,7 @@ public class AccountController {
     }
 
 
-    @RequestMapping(value = "${jwt.route.authentication.refresh}", method = RequestMethod.GET)
+    @GetMapping("${jwt.route.authentication.refresh}")
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         String authToken = request.getHeader(tokenHeader);
         final String token = authToken.substring(7);
