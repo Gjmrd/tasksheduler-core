@@ -9,7 +9,7 @@ import org.taskscheduler.domain.entities.User;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
     User findByEmail(String email);
     @Query("select u from User u where u.username in :usernames")

@@ -1,5 +1,7 @@
 package org.taskscheduler.services.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ public class GroupServiceImpl implements GroupService {
 
     private GroupRepository groupRepository;
     private UserRepository userRepository;
+
+    private Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
 
     @Autowired
     public GroupServiceImpl(GroupRepository groupRepository,
@@ -41,10 +45,12 @@ public class GroupServiceImpl implements GroupService {
         Group group = new Group();
         CompletableFuture future = CompletableFuture
                 .supplyAsync(() -> userRepository.findByUsernameArray(groupDto.getMembers()))
-                .thenAccept(members -> group.setMembers(members));
+                .thenAccept(group::setMembers);
         group.setName(groupDto.getName());
         future.get();
-        return groupRepository.save(group);
+        groupRepository.save(group);
+        logger.info("group %s has been created", group.getName());
+        return group;
     }
 
 
@@ -52,12 +58,14 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Group addUserToGroup(Group group, User user) {
         group.getMembers().add(user);
+        logger.info("user %s has been added to group %s", user.getUsername(), group.getName());
         return groupRepository.save(group);
     }
 
     @Override
     public Group removeUserFromGroup(Group group, User user) {
         group.getMembers().remove(group);
+        logger.info("user %s has been removed from group %s", user.getUsername(), group.getName());
         return groupRepository.save(group);
     }
 

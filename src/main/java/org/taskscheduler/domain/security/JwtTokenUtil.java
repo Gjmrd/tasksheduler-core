@@ -55,6 +55,11 @@ public class JwtTokenUtil implements Serializable {
         return claims.get("userid", Long.class);
     }
 
+    public Date getLastPasswordResetDateFromToken(String token) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claims.get("lprd", Date.class);
+    }
+
     public List<SimpleGrantedAuthority>  getRolesFromToken(String token) {
         final Claims claims = getAllClaimsFromToken(token);
 
@@ -67,7 +72,7 @@ public class JwtTokenUtil implements Serializable {
 
 
 
-    private Claims getAllClaimsFromToken(String token) {
+    public Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
@@ -91,6 +96,7 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(JwtUser userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userid", userDetails.getId());
+        claims.put("lprd", userDetails.getLastPasswordResetDate());
         claims.put("roles", userDetails.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .collect(Collectors.joining(",")));

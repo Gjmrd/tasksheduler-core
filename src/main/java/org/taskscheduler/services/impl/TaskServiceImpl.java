@@ -1,5 +1,7 @@
 package org.taskscheduler.services.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
+
 @Service
 public class TaskServiceImpl implements TaskService {
 
     private TaskRepository taskRepository;
     private UserRepository userRepository;
     private TaskLogRepository taskLogRepository;
+
+    private Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
@@ -58,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = new Task();
         CompletableFuture future = CompletableFuture
                 .supplyAsync(() -> userRepository.findByUsernameArray(taskDto.getExecutors()))
-                .thenAccept(executors -> task.setExecutors(executors));
+                .thenAccept(task::setExecutors);
         task.setCaption(taskDto.getCaption());
         task.setDescription(taskDto.getDescription());
         task.setPriority(Priority.HIGHEST);
@@ -66,7 +71,9 @@ public class TaskServiceImpl implements TaskService {
         task.setCreatorId(userId);
         future.get();
         CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(userId, task, "status", Status.NONE.toString(), Status.UNACCEPTED.toString() )));
-        return taskRepository.save(task);
+        taskRepository.save(task);
+        logger.info("task %o has been created", task.getId());
+        return task;
     }
 
     @Override
@@ -74,6 +81,7 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(Status.FREEZED);
         CompletableFuture.runAsync(() -> taskLogRepository.save(new TaskLog(userId, task, "status", task.getStatus().toString(), Status.FREEZED.toString())));
         taskRepository.save(task);
+        logger.info("task %o has been freezed", task.getId());
     }
 
     @Override
@@ -100,7 +108,7 @@ public class TaskServiceImpl implements TaskService {
             taskLogRepository.save(new TaskLog(userId, task, "status", task.getStatus().toString(), Status.CLOSED.toString()));
             taskLogRepository.save(new TaskLog(userId, task, "closeReason", CloseReason.NONE.toString(), reason.toString()));
         });
-
         taskRepository.save(task);
+        logger.info("task %o has been closed by %o", task.getId(), userId);
     }
 }

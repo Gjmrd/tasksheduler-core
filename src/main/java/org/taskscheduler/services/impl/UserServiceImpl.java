@@ -1,9 +1,10 @@
 package org.taskscheduler.services.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.taskscheduler.domain.entities.User;
@@ -20,7 +21,7 @@ import java.util.*;
 
 
 @Service
-class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
 
     private UserRepository userRepository;
@@ -29,6 +30,8 @@ class UserServiceImpl implements UserService {
     private VerificationTokenRepository verificationTokenRepository;
     private Calendar calendar;
     private JavaMailSender javaMailSender;
+
+    private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -45,7 +48,7 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(long id) {
         return userRepository.findById(id).orElseGet( null);
     }
 
@@ -65,22 +68,10 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Async
-    public User save(User user) {
-        return userRepository.saveAndFlush(user);
-    }
-
-    @Override
-    public void delete(User user) {
-        userRepository.delete(user);
-    }
-
-    @Override
-    @Async
     public void changePassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
-
+        logger.info("user %s has been changed password",  user.getUsername());
     }
 
     @Override
@@ -100,7 +91,6 @@ class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(JwtSignupRequest request) {
-
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -108,8 +98,10 @@ class UserServiceImpl implements UserService {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setEnabled(true);
-        user.setAuthorities(Arrays.asList(authorityRepository.findByName(AuthorityName.ROLE_USER)));
-        return userRepository.save(user);
+        user.setAuthorities(Collections.singletonList(authorityRepository.findByName(AuthorityName.ROLE_USER)));
+        userRepository.save(user);
+        logger.info("user %s has been created", user.getUsername());
+        return user;
     }
 
     @Override
@@ -121,7 +113,9 @@ class UserServiceImpl implements UserService {
         verificationToken.setToken(token);
         verificationToken.setUser(user);
         verificationToken.setExpiresAt(expiryDate);
-        return verificationTokenRepository.save(verificationToken);
+        verificationTokenRepository.save(verificationToken);
+        logger.info("verification token for user %s has been created", user.getUsername());
+        return verificationToken;
     }
 
     @Override
@@ -131,18 +125,20 @@ class UserServiceImpl implements UserService {
         message.setSubject("password reset verification token");
         message.setText("your verification token is : " + verificationToken.getToken());
         javaMailSender.send(message);
+        logger.info("verification token %o has been sent to %s", verificationToken.getId(), verificationToken.getUser().getUsername());
     }
 
     @Override
     public void confirmPasswordReset(String token, String newPassword) throws InvalidVerificationTokenException{
         VerificationToken verificationToken = verificationTokenRepository.getByToken(token);
-        if (validateVerificationToken(verificationToken, token) == false) {
+        if (!validateVerificationToken(verificationToken, token)) {
             throw new InvalidVerificationTokenException("Invalid token");
         }
         User user = verificationToken.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         verificationTokenRepository.delete(verificationToken);
+        logger.info("user %s has confirmed password reset",  user.getUsername());
 
     }
 

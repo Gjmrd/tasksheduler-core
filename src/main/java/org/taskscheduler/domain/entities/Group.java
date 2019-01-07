@@ -10,18 +10,18 @@ import java.util.List;
 @Table(name = "groups")
 public class Group implements Serializable{
 
-    private int id;
+    private long id;
     private List<User> members;
     private String name;
 
     @Id
     @GeneratedValue(generator = "increment")
     @Column(name = "id")
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
