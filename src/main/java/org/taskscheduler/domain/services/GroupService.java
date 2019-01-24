@@ -1,4 +1,4 @@
-package org.taskscheduler.services;
+package org.taskscheduler.domain.services;
 
 import org.springframework.data.domain.Pageable;
 import org.taskscheduler.domain.entities.Group;

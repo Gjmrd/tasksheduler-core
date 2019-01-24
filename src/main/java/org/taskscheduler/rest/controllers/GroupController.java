@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.taskscheduler.domain.entities.Group;
 import org.taskscheduler.domain.exceptions.EntityNotFoundException;
 import org.taskscheduler.rest.dto.GroupDto;
-import org.taskscheduler.services.GroupService;
+import org.taskscheduler.domain.services.GroupService;
 
 
 

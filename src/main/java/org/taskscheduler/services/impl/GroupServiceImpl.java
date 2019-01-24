@@ -11,7 +11,7 @@ import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.repositories.GroupRepository;
 import org.taskscheduler.domain.repositories.UserRepository;
 import org.taskscheduler.rest.dto.GroupDto;
-import org.taskscheduler.services.GroupService;
+import org.taskscheduler.domain.services.GroupService;
 
 import java.util.concurrent.CompletableFuture;
 

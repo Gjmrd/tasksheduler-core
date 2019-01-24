@@ -18,8 +18,8 @@ import org.taskscheduler.domain.config.WebSecurityConfig;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.enums.Status;
 import org.taskscheduler.rest.controllers.TaskController;
-import org.taskscheduler.services.TaskService;
-import org.taskscheduler.services.UserService;
+import org.taskscheduler.domain.services.TaskService;
+import org.taskscheduler.domain.services.UserService;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;

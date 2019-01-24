@@ -25,7 +25,7 @@ import org.taskscheduler.domain.exceptions.EntityNotFoundException;
 import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
 import org.taskscheduler.domain.exceptions.RegistrationException;
 import org.taskscheduler.domain.security.JwtUserFactory;
-import org.taskscheduler.services.UserService;
+import org.taskscheduler.domain.services.UserService;
 import org.taskscheduler.rest.dto.JwtAuthenticationResponse;
 import org.taskscheduler.rest.dto.JwtAuthenticationRequest;
 import org.taskscheduler.rest.dto.JwtSignUpResponse;

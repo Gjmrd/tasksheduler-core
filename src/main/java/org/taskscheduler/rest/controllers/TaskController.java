@@ -10,8 +10,8 @@ import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.enums.CloseReason;
 import org.taskscheduler.domain.exceptions.EntityNotFoundException;
 import org.taskscheduler.domain.security.JwtUser;
-import org.taskscheduler.services.TaskService;
-import org.taskscheduler.services.UserService;
+import org.taskscheduler.domain.services.TaskService;
+import org.taskscheduler.domain.services.UserService;
 import org.taskscheduler.rest.dto.TaskDto;
 
 import java.util.Date;

@@ -14,7 +14,7 @@ import org.taskscheduler.domain.exceptions.InvalidVerificationTokenException;
 import org.taskscheduler.domain.repositories.AuthorityRepository;
 import org.taskscheduler.domain.repositories.UserRepository;
 import org.taskscheduler.domain.repositories.VerificationTokenRepository;
-import org.taskscheduler.services.UserService;
+import org.taskscheduler.domain.services.UserService;
 import org.taskscheduler.rest.dto.JwtSignupRequest;
 
 import java.util.*;

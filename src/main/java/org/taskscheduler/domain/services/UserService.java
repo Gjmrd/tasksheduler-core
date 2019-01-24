@@ -1,4 +1,4 @@
-package org.taskscheduler.services;
+package org.taskscheduler.domain.services;
 
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.VerificationToken;

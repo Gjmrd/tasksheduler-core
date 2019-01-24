@@ -15,7 +15,7 @@ import org.taskscheduler.domain.entities.enums.Status;
 import org.taskscheduler.domain.repositories.TaskLogRepository;
 import org.taskscheduler.domain.repositories.TaskRepository;
 import org.taskscheduler.domain.repositories.UserRepository;
-import org.taskscheduler.services.TaskService;
+import org.taskscheduler.domain.services.TaskService;
 import org.taskscheduler.rest.dto.TaskDto;
 
 

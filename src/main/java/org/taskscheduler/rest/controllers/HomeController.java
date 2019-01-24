@@ -4,10 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
-import org.taskscheduler.services.TaskService;
-import org.taskscheduler.services.UserService;
+import org.taskscheduler.domain.services.TaskService;
+import org.taskscheduler.domain.services.UserService;
 
 
 @RestController

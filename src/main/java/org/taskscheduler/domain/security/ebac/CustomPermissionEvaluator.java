@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.taskscheduler.domain.entities.Task;
 import org.taskscheduler.domain.entities.User;
 import org.taskscheduler.domain.entities.enums.AuthorityName;
-import org.taskscheduler.services.TaskService;
-import org.taskscheduler.services.UserService;
+import org.taskscheduler.domain.services.TaskService;
+import org.taskscheduler.domain.services.UserService;
 
 import java.io.Serializable;
 
