@@ -28,11 +28,11 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 
     private final UserDetailsService userDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final org.taskscheduler.domain.security.JwtTokenUtil jwtTokenUtil;
     private final String tokenHeader;
 
     public JwtAuthorizationTokenFilter(@Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService,
-                                       JwtTokenUtil jwtTokenUtil,
+                                       org.taskscheduler.domain.security.JwtTokenUtil jwtTokenUtil,
                                        @Value("${jwt.header}") String tokenHeader) {
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
@@ -67,7 +67,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             logger.debug("security context was null, so authorizating user");
 
 
-            JwtUser userDetails = new JwtUser(
+            org.taskscheduler.domain.security.JwtUser userDetails = new org.taskscheduler.domain.security.JwtUser(
                     jwtTokenUtil.getUserIdFromToken(authToken),
                     jwtTokenUtil.getUsernameFromToken(authToken),
                     null,
