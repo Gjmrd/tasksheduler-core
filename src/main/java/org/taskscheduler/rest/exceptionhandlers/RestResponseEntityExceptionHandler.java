@@ -1,6 +1,5 @@
-package org.taskscheduler.rest.advices;
+package org.taskscheduler.rest.exceptionhandlers;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
